@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react-native';
 
-import TabOneScreen from '../index';
+import CurrentGameScreen from '../index';
 
-describe('<TabOneScreen />', () => {
+describe('<CurrentGameScreen />', () => {
   test('Text renders correctly', () => {
-    const { getByText } = render(<TabOneScreen />);
+    const { getByText } = render(<CurrentGameScreen />);
 
-    getByText('Tab One');
+    getByText('Current Game');
   });
 });
