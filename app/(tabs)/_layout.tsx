@@ -18,6 +18,8 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  // Use absolute paths in case you want to use statically typed routes
+  
   return (
     <Tabs
       screenOptions={{

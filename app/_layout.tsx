@@ -8,6 +8,11 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
+/**
+ * Layout routes render shared elements like headers and tab bars to persist
+ * between pages. They must be exported as default.
+ */ 
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -45,6 +50,7 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+// Stack is an alternative to Slot from expo-router
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 

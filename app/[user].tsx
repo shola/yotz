@@ -1,3 +1,5 @@
 /**
- * A starter route that will match the dynamic path `/${username}` like '/someusername'
+ * A starter route that will match the dynamic path `/${user}` like '/someusername'
+ * 
+ * 'user' is a route param
  */ 
