@@ -6,8 +6,8 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.message}>
-        <Text style={styles.emphasis}>yot-z</Text> is a companion app for the classic dice game, Yachtzee®, that will
-        help you keep score.
+        <Text style={styles.emphasis}>yot-z</Text> is a companion app for the
+        classic dice game, Yachtzee®, that will help you keep score.
       </Text>
       <Link href="game" asChild>
         <Button style={styles.button} mode="contained">
@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   emphasis: {
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
-  message: {padding: 24},
+  message: { padding: 24 },
   button: {},
 });
