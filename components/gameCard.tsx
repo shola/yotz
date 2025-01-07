@@ -133,7 +133,9 @@ export default function GameCard() {
               <Text>TOTAL SCORE</Text>
             </View>
             <View style={col2StyleNormal}>
-              <Icon source="arrow-right" size={30} />
+              <View style={{ transform: [{ scaleX: 4 }] }}>
+                <Icon source="arrow-right-thin" size={30} />
+              </View>
             </View>
             <View style={col3StyleNormal}>
               <Text></Text>
@@ -165,7 +167,9 @@ export default function GameCard() {
               </Text>
             </View>
             <View style={col2StyleNormal}>
-              <Icon source="arrow-right" size={30} />
+              <View style={{ transform: [{ scaleX: 4 }] }}>
+                <Icon source="arrow-right-thin" size={30} />
+              </View>
             </View>
             <View style={col3StyleNormal}>
               <Text></Text>
@@ -299,22 +303,23 @@ export default function GameCard() {
                 <View
                   style={{
                     ...col3StyleNormal,
+                    borderWidth: 0,
                     paddingLeft: 0,
                     paddingRight: 0,
                     flexDirection: "row",
                   }}
                 >
-                  <View style={{ flex: 1, borderWidth: 1 }}>
-                    <Text></Text>
+                  <View style={styles.bonusCell}>
+                    <Text> </Text>
                   </View>
-                  <View style={{ flex: 1, borderWidth: 1 }}>
-                    <Text></Text>
+                  <View style={styles.bonusCell}>
+                    <Text> </Text>
                   </View>
-                  <View style={{ flex: 1, borderWidth: 1 }}>
-                    <Text></Text>
+                  <View style={styles.bonusCell}>
+                    <Text> </Text>
                   </View>
-                  <View style={{ flex: 1, borderWidth: 1 }}>
-                    <Text></Text>
+                  <View style={styles.bonusCell}>
+                    <Text> </Text>
                   </View>
                 </View>
               </Row>
@@ -343,7 +348,9 @@ export default function GameCard() {
               </Text>
             </View>
             <View style={col2StyleNormal}>
-              <Icon source="arrow-right" size={30} />
+              <View style={{ transform: [{ scaleX: 4 }] }}>
+                <Icon source="arrow-right-thin" size={30} />
+              </View>
             </View>
             <View style={col3StyleNormal}>
               <Text></Text>
@@ -359,7 +366,9 @@ export default function GameCard() {
               </Text>
             </View>
             <View style={col2StyleNormal}>
-              <Icon source="arrow-right" size={30} />
+              <View style={{ transform: [{ scaleX: 4 }] }}>
+                <Icon source="arrow-right-thin" size={30} />
+              </View>
             </View>
             <View style={col3StyleNormal}>
               <Text></Text>
@@ -372,7 +381,9 @@ export default function GameCard() {
               <Text>GRAND TOTAL</Text>
             </View>
             <View style={col2StyleNormal}>
-              <Icon source="arrow-right" size={30} />
+              <View style={{ transform: [{ scaleX: 4 }] }}>
+                <Icon source="arrow-right-thin" size={30} />
+              </View>
             </View>
             <View style={col3StyleNormal}>
               <Text></Text>
@@ -442,4 +453,5 @@ const styles = StyleSheet.create({
   rightAlign: {
     textAlign: "right",
   },
+  bonusCell: { flex: 1, borderWidth: 0.5, height: "100%" },
 });
