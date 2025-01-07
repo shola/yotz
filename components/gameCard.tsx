@@ -284,13 +284,53 @@ export default function GameCard() {
         <View id="lower-section-row-8">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>YOT-Z BONUS</Text>
+              <Text style={{ width: 50, textAlign: "center" }}>
+                YOT-Z BONUS
+              </Text>
             </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>TODO</Text>
-            </View>
-            <View style={col3StyleNormal}>
-              <Text></Text>
+            <View>
+              <Row>
+                <View style={{ ...col2StyleNormal, flexDirection: "row" }}>
+                  <Icon source="check" size={15} />
+                  <Text style={{ ...col2TextStyleXs, width: 50 }}>
+                    FOR EACH BONUS
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    ...col3StyleNormal,
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    flexDirection: "row",
+                  }}
+                >
+                  <View style={{ flex: 1, borderWidth: 1 }}>
+                    <Text></Text>
+                  </View>
+                  <View style={{ flex: 1, borderWidth: 1 }}>
+                    <Text></Text>
+                  </View>
+                  <View style={{ flex: 1, borderWidth: 1 }}>
+                    <Text></Text>
+                  </View>
+                  <View style={{ flex: 1, borderWidth: 1 }}>
+                    <Text></Text>
+                  </View>
+                </View>
+              </Row>
+              <Row>
+                <View style={{ ...col2StyleNormal, flexDirection: "row" }}>
+                  <Text style={{ ...col2TextStyleXs, width: 50 }}>
+                    SCORE 100 PER
+                  </Text>
+                  <Icon source="check" size={15} />
+                </View>
+                <View style={col3StyleNormal}>
+                  <View>
+                    <Text></Text>
+                  </View>
+                </View>
+              </Row>
             </View>
           </Row>
         </View>
