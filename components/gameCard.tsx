@@ -2,10 +2,6 @@ import { ReactNode, PropsWithChildren } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { DataTable, Icon, Divider } from "react-native-paper";
 
-const Row = ({ children }: PropsWithChildren) => (
-  <View style={styles.row}>{children}</View>
-);
-
 export default function GameCard() {
   const col1HeaderStyle = { ...styles.col1Header, ...styles.centerAlignView };
 
@@ -28,7 +24,7 @@ export default function GameCard() {
     <View style={styles.card}>
       <View id="upper-section">
         <View id="upper-section-header-row">
-          <Row>
+          <View style={styles.row}>
             <View style={col1HeaderStyle}>
               <Text style={styles.centerAlignText}>UPPER SECTION</Text>
             </View>
@@ -38,10 +34,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text style={styles.centerAlignText}>Game #1</Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-1">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Aces</Text>
               <View style={styles.diceIconGroup}>
@@ -55,10 +51,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-2">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Twos</Text>
               <View style={styles.diceIconGroup}>
@@ -72,10 +68,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-3">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Threes</Text>
               <View style={styles.diceIconGroup}>
@@ -89,10 +85,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-4">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Fours</Text>
               <View style={styles.diceIconGroup}>
@@ -106,10 +102,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-5">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Fives</Text>
               <View style={styles.diceIconGroup}>
@@ -123,10 +119,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-6">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Sixes</Text>
               <View style={styles.diceIconGroup}>
@@ -140,10 +136,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-7">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>TOTAL SCORE</Text>
             </View>
@@ -155,10 +151,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-8">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>Bonus{"  "}</Text>
               <Text style={{ ...styles["text-xs"], width: 55 }}>
@@ -171,10 +167,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="upper-section-row-9">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>Total{"    "}</Text>
               <Text style={{ ...styles["text-xs"], width: 55 }}>
@@ -189,19 +185,19 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
       </View>
       <View id="lower-section">
         <View id="lower-section-header-row">
-          <Row>
+          <View style={styles.row}>
             <View>
               <Text>LOWER SECTION</Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-1">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={{ ...styles["text-sm"], width: 30 }}>
                 3 of a kind
@@ -213,10 +209,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-2">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={{ ...styles["text-sm"], width: 30 }}>
                 4 of a kind
@@ -228,10 +224,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-3">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={{ ...styles["text-sm"], width: 40 }}>
                 Full House
@@ -243,10 +239,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-4">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={{ ...styles["text-sm"], width: 40 }}>
                 Sm Straight
@@ -263,10 +259,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-5">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={{ ...styles["text-sm"], width: 40 }}>
                 Lg Straight
@@ -283,10 +279,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-6">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>YOT-Z{"     "}</Text>
               <Text style={{ ...styles["text-xs"], width: 40 }}>
@@ -299,10 +295,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-7">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>Chance</Text>
             </View>
@@ -312,10 +308,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-8">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text
                 style={{
@@ -329,7 +325,7 @@ export default function GameCard() {
               </Text>
             </View>
             <View>
-              <Row>
+              <View style={styles.row}>
                 <View style={{ ...col2StyleNormal, flexDirection: "row" }}>
                   <Icon source="check" size={15} />
                   <Text style={{ ...col2TextStyleXs, width: 50 }}>
@@ -358,8 +354,8 @@ export default function GameCard() {
                     <Text> </Text>
                   </View>
                 </View>
-              </Row>
-              <Row>
+              </View>
+              <View style={styles.row}>
                 <View style={{ ...col2StyleNormal, flexDirection: "row" }}>
                   <Text style={{ ...col2TextStyleXs, width: 50 }}>
                     SCORE 100 PER
@@ -371,12 +367,12 @@ export default function GameCard() {
                     <Text></Text>
                   </View>
                 </View>
-              </Row>
+              </View>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-9">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
               <Text style={{ ...styles["text-xs"], width: 40 }}>
@@ -391,10 +387,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-10">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
               <Text style={{ ...styles["text-xs"], width: 40 }}>
@@ -409,10 +405,10 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
         <View id="lower-section-row-11">
-          <Row>
+          <View style={styles.row}>
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>GRAND TOTAL</Text>
             </View>
@@ -424,7 +420,7 @@ export default function GameCard() {
             <View style={col3StyleNormal}>
               <Text></Text>
             </View>
-          </Row>
+          </View>
         </View>
       </View>
     </View>
