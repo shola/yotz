@@ -7,7 +7,10 @@ export default function RootLayout() {
   return (
     <PaperProvider>
       <Stack>
-        <Stack.Screen name="index" options={{ title: "Welcome to yot-z!" }} />
+        <Stack.Screen
+          name="index"
+          options={{ title: "Welcome to yot-z!", headerBackVisible: false }}
+        />
         <Stack.Screen
           name="game"
           options={{
