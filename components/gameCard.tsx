@@ -203,7 +203,9 @@ export default function GameCard() {
         <View id="lower-section-row-1">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>3 of a kind</Text>
+              <Text style={{ ...styles["text-sm"], width: 30 }}>
+                3 of a kind
+              </Text>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
@@ -216,7 +218,9 @@ export default function GameCard() {
         <View id="lower-section-row-2">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>4 of a kind</Text>
+              <Text style={{ ...styles["text-sm"], width: 30 }}>
+                4 of a kind
+              </Text>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
@@ -229,7 +233,9 @@ export default function GameCard() {
         <View id="lower-section-row-3">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Full House</Text>
+              <Text style={{ ...styles["text-sm"], width: 40 }}>
+                Full House
+              </Text>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score 25</Text>
