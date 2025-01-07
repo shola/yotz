@@ -44,13 +44,7 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Aces</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.diceIconGroup}>
                 <Icon source="dice-1-outline" size={30} />
                 <Text style={{ marginLeft: 2 }}>= 1</Text>
               </View>
@@ -67,13 +61,7 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Twos</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.diceIconGroup}>
                 <Icon source="dice-2-outline" size={30} />
                 <Text>= 2</Text>
               </View>
@@ -90,13 +78,7 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Threes</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.diceIconGroup}>
                 <Icon source="dice-3-outline" size={30} />
                 <Text>= 3</Text>
               </View>
@@ -113,13 +95,7 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Fours</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.diceIconGroup}>
                 <Icon source="dice-4-outline" size={30} />
                 <Text>= 4</Text>
               </View>
@@ -136,13 +112,7 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Fives</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.diceIconGroup}>
                 <Icon source="dice-5-outline" size={30} />
                 <Text>= 5</Text>
               </View>
@@ -159,13 +129,7 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Sixes</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.diceIconGroup}>
                 <Icon source="dice-6-outline" size={30} />
                 <Text>= 6</Text>
               </View>
@@ -184,7 +148,7 @@ export default function GameCard() {
               <Text style={styles["text-md"]}>TOTAL SCORE</Text>
             </View>
             <View style={col2StyleNormal}>
-              <View style={{ transform: [{ scaleX: 4 }] }}>
+              <View style={styles.arrow}>
                 <Icon source="arrow-right-thin" size={30} />
               </View>
             </View>
@@ -218,7 +182,7 @@ export default function GameCard() {
               </Text>
             </View>
             <View style={col2StyleNormal}>
-              <View style={{ transform: [{ scaleX: 4 }] }}>
+              <View style={styles.arrow}>
                 <Icon source="arrow-right-thin" size={30} />
               </View>
             </View>
@@ -414,7 +378,7 @@ export default function GameCard() {
               </Text>
             </View>
             <View style={col2StyleNormal}>
-              <View style={{ transform: [{ scaleX: 4 }] }}>
+              <View style={styles.arrow}>
                 <Icon source="arrow-right-thin" size={30} />
               </View>
             </View>
@@ -432,7 +396,7 @@ export default function GameCard() {
               </Text>
             </View>
             <View style={col2StyleNormal}>
-              <View style={{ transform: [{ scaleX: 4 }] }}>
+              <View style={styles.arrow}>
                 <Icon source="arrow-right-thin" size={30} />
               </View>
             </View>
@@ -447,7 +411,7 @@ export default function GameCard() {
               <Text style={styles["text-md"]}>GRAND TOTAL</Text>
             </View>
             <View style={col2StyleNormal}>
-              <View style={{ transform: [{ scaleX: 4 }] }}>
+              <View style={styles.arrow}>
                 <Icon source="arrow-right-thin" size={30} />
               </View>
             </View>
@@ -524,4 +488,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   bonusCell: { flex: 1, borderWidth: 0.5, height: "100%" },
+  diceIconGroup: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  arrow: { transform: [{ scaleX: 4 }] },
 });
