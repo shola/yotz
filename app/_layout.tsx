@@ -11,7 +11,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="game"
           options={{
-            title: "Yot-z started",
+            title: "YOT-Z Score Card",
             headerBackVisible: false,
             headerRight: () => (
               <EndGameButton
