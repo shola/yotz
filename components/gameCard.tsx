@@ -3,24 +3,16 @@ import { StyleSheet, View, Text } from "react-native";
 import { DataTable, Icon, Divider } from "react-native-paper";
 
 // Pattern borrowed from: https://medium.com/@kalebjdavenport/how-to-create-a-grid-layout-in-react-native-7948f1a6f949
-const UnstyledCol = ({ children }: { children: ReactNode }) => (
-  <View>{children}</View>
-);
-const Col = ({ children }: { children: ReactNode }) => (
-  <View style={styles.col}>{children}</View>
-);
+const Col = ({
+  numCols,
+  children,
+}: {
+  numCols?: number;
+  children: ReactNode;
+}) => <View style={styles.col}>{children}</View>;
+
 const Row = ({ children }: { children: ReactNode }) => (
   <View style={styles.row}>{children}</View>
-);
-
-const TextMd = ({ children }: { children?: ReactNode }) => (
-  <Text style={styles["text-md"]}>{children}</Text>
-);
-const TextSm = ({ children }: { children: ReactNode }) => (
-  <Text style={styles["text-sm"]}>{children}</Text>
-);
-const TextXs = ({ children }: { children: ReactNode }) => (
-  <Text style={styles["text-xs"]}>{children}</Text>
 );
 
 export default function GameCard() {
@@ -30,146 +22,149 @@ export default function GameCard() {
         <View id="upper-section-header-row">
           <Row>
             <Col>
-              <TextMd>UPPER SECTION</TextMd>
+              <Text>UPPER SECTION</Text>
             </Col>
             <Col>
-              <TextMd>HOW TO SCORE</TextMd>
+              <Text>HOW TO SCORE</Text>
             </Col>
             <Col>
-              <TextMd>Game #1</TextMd>
+              <Text>Game #1</Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-1">
           <Row>
             <Col>
-              <TextMd>
+              <Text>
                 ACES <Icon source="dice-1-outline" size={20} /> = 1
-              </TextMd>
+              </Text>
             </Col>
             <Col>
-              <TextSm>Count and add only Aces</TextSm>
+              <Text style={styles["text-sm"]}>Count and add only Aces</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-2">
           <Row>
             <Col>
-              <TextMd>
+              <Text>
                 TWOS <Icon source="dice-2-outline" size={20} /> = 2
-              </TextMd>
+              </Text>
             </Col>
             <Col>
-              <TextSm>Count and add only Twos</TextSm>
+              <Text style={styles["text-sm"]}>Count and add only Twos</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-3">
           <Row>
             <Col>
-              <TextMd>
+              <Text>
                 Threes <Icon source="dice-3-outline" size={20} /> = 3
-              </TextMd>
+              </Text>
             </Col>
             <Col>
-              <TextSm>Count and add only Threes</TextSm>
+              <Text style={styles["text-sm"]}>Count and add only Threes</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-4">
           <Row>
             <Col>
-              <TextMd>
+              <Text>
                 Fours <Icon source="dice-4-outline" size={20} /> = 4
-              </TextMd>
+              </Text>
             </Col>
             <Col>
-              <TextSm>Count and add only Fours</TextSm>
+              <Text style={styles["text-sm"]}>Count and add only Fours</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-5">
           <Row>
             <Col>
-              <TextMd>
+              <Text>
                 Fives <Icon source="dice-5-outline" size={20} /> = 5
-              </TextMd>
+              </Text>
             </Col>
             <Col>
-              <TextSm>Count and add only Fives</TextSm>
+              <Text style={styles["text-sm"]}>Count and add only Fives</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-6">
           <Row>
             <Col>
-              <TextMd>
+              <Text>
                 Sixes <Icon source="dice-6-outline" size={20} /> = 6
-              </TextMd>
+              </Text>
             </Col>
             <Col>
-              <TextSm>Count and add only Sixes</TextSm>
+              <Text style={styles["text-sm"]}>Count and add only Sixes</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-7">
           <Row>
             <Col>
-              <TextMd>TOTAL SCORE</TextMd>
+              <Text>TOTAL SCORE</Text>
             </Col>
             <Col>
               <Icon source="arrow-right" size={20} />
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-8">
           <Row>
             <Col>
-              <TextMd>
-                Bonus <TextXs>If total score is 63 or over</TextXs>
-              </TextMd>
+              <Text>
+                Bonus{" "}
+                <Text style={styles["text-xs"]}>
+                  If total score is 63 or over
+                </Text>
+              </Text>
             </Col>
             <Col>
-              <TextMd>SCORE 35</TextMd>
+              <Text>SCORE 35</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="upper-section-row-9">
           <Row>
             <Col>
-              <TextMd>
-                Total <TextXs>Of Upper Section</TextXs>
-              </TextMd>
+              <Text>
+                Total <Text style={styles["text-xs"]}>Of Upper Section</Text>
+              </Text>
             </Col>
             <Col>
               <Icon source="arrow-right" size={20} />
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
@@ -177,161 +172,163 @@ export default function GameCard() {
       <View id="lower-section">
         <View id="lower-section-header-row">
           <Row>
-            <UnstyledCol>
-              <TextMd>LOWER SECTION</TextMd>
-            </UnstyledCol>
+            <Col>
+              <Text>LOWER SECTION</Text>
+            </Col>
           </Row>
         </View>
         <View id="lower-section-row-1">
           <Row>
             <Col>
-              <TextMd>3 of a kind</TextMd>
+              <Text>3 of a kind</Text>
             </Col>
             <Col>
-              <TextXs>Add Total of All Dice</TextXs>
+              <Text style={styles["text-xs"]}>Add Total of All Dice</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-2">
           <Row>
             <Col>
-              <TextMd>4 of a kind</TextMd>
+              <Text>4 of a kind</Text>
             </Col>
             <Col>
-              <TextXs>Add Total of All Dice</TextXs>
+              <Text style={styles["text-xs"]}>Add Total of All Dice</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-3">
           <Row>
             <Col>
-              <TextMd>Full House</TextMd>
+              <Text>Full House</Text>
             </Col>
             <Col>
-              <TextXs>Score 25</TextXs>
+              <Text style={styles["text-xs"]}>Score 25</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-4">
           <Row>
             <Col>
-              <TextMd>
-                Sm Straight <TextXs>(Sequence) of 4</TextXs>
-              </TextMd>
+              <Text>
+                Sm Straight{" "}
+                <Text style={styles["text-xs"]}>(Sequence) of 4</Text>
+              </Text>
             </Col>
             <Col>
-              <TextXs>Score 30</TextXs>
+              <Text style={styles["text-xs"]}>Score 30</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-5">
           <Row>
             <Col>
-              <TextMd>
-                Lg Straight <TextXs>(Sequence) of 5</TextXs>
-              </TextMd>
+              <Text>
+                Lg Straight{" "}
+                <Text style={styles["text-xs"]}>(Sequence) of 5</Text>
+              </Text>
             </Col>
             <Col>
-              <TextXs>Score 40</TextXs>
+              <Text style={styles["text-xs"]}>Score 40</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-6">
           <Row>
             <Col>
-              <TextMd>
-                YOT-Z <TextXs>5 of a kind</TextXs>
-              </TextMd>
+              <Text>
+                YOT-Z <Text style={styles["text-xs"]}>5 of a kind</Text>
+              </Text>
             </Col>
             <Col>
-              <TextXs>Score 50</TextXs>
+              <Text style={styles["text-xs"]}>Score 50</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-7">
           <Row>
             <Col>
-              <TextMd>Chance</TextMd>
+              <Text>Chance</Text>
             </Col>
             <Col>
-              <TextXs>Score Total Of All 5 Dice</TextXs>
+              <Text style={styles["text-xs"]}>Score Total Of All 5 Dice</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-8">
           <Row>
             <Col>
-              <TextMd>YOT-Z BONUS</TextMd>
+              <Text>YOT-Z BONUS</Text>
             </Col>
             <Col>
-              <TextXs>TODO</TextXs>
+              <Text style={styles["text-xs"]}>TODO</Text>
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-9">
           <Row>
             <Col>
-              <TextMd>
-                TOTAL <TextXs>Of Lower Section</TextXs>
-              </TextMd>
+              <Text>
+                TOTAL <Text style={styles["text-xs"]}>Of Lower Section</Text>
+              </Text>
             </Col>
             <Col>
               <Icon source="arrow-right" size={20} />
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-10">
           <Row>
             <Col>
-              <TextMd>
-                TOTAL <TextXs>Of Upper Section</TextXs>
-              </TextMd>
+              <Text>
+                TOTAL <Text style={styles["text-xs"]}>Of Upper Section</Text>
+              </Text>
             </Col>
             <Col>
               <Icon source="arrow-right" size={20} />
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
         <View id="lower-section-row-11">
           <Row>
             <Col>
-              <TextMd>GRAND TOTAL</TextMd>
+              <Text>GRAND TOTAL</Text>
             </Col>
             <Col>
               <Icon source="arrow-right" size={20} />
             </Col>
             <Col>
-              <TextMd></TextMd>
+              <Text></Text>
             </Col>
           </Row>
         </View>
@@ -371,13 +368,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  "text-md": {
-    fontSize: 12,
+  "text-xs": {
+    fontSize: 8,
   },
   "text-sm": {
     fontSize: 10,
-  },
-  "text-xs": {
-    fontSize: 8,
   },
 });
