@@ -9,7 +9,10 @@ const Row = ({ children }: PropsWithChildren) => (
 export default function GameCard() {
   const col1HeaderStyle = { ...styles.col1Header, ...styles.centerAlignView };
 
-  const col1StyleNormal = { ...styles.col1, ...styles.centerAlignView };
+  const col1StyleNormal = {
+    ...styles.col1,
+    ...styles.centerAlignView,
+  };
   const col2StyleNormal = { ...styles.col2, ...styles.centerAlignView };
   const col3StyleNormal = { ...styles.col3, ...styles.centerAlignView };
 
@@ -41,8 +44,16 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Aces</Text>
-              <Icon source="dice-1-outline" size={30} />
-              <Text> = 1</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Icon source="dice-1-outline" size={30} />
+                <Text style={{ marginLeft: 2 }}>= 1</Text>
+              </View>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Aces</Text>
@@ -56,8 +67,16 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Twos</Text>
-              <Icon source="dice-2-outline" size={30} />
-              <Text> = 2</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Icon source="dice-2-outline" size={30} />
+                <Text>= 2</Text>
+              </View>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Twos</Text>
@@ -71,8 +90,16 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Threes</Text>
-              <Icon source="dice-3-outline" size={30} />
-              <Text> = 3</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Icon source="dice-3-outline" size={30} />
+                <Text>= 3</Text>
+              </View>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Threes</Text>
@@ -86,8 +113,16 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Fours</Text>
-              <Icon source="dice-4-outline" size={30} />
-              <Text> = 4</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Icon source="dice-4-outline" size={30} />
+                <Text>= 4</Text>
+              </View>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Fours</Text>
@@ -101,8 +136,16 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Fives</Text>
-              <Icon source="dice-5-outline" size={30} />
-              <Text> = 5</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Icon source="dice-5-outline" size={30} />
+                <Text>= 5</Text>
+              </View>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Fives</Text>
@@ -116,8 +159,16 @@ export default function GameCard() {
           <Row>
             <View style={col1StyleNormal}>
               <Text style={styles["text-sm"]}>Sixes</Text>
-              <Icon source="dice-6-outline" size={30} />
-              <Text> = 6</Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Icon source="dice-6-outline" size={30} />
+                <Text>= 6</Text>
+              </View>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Sixes</Text>
@@ -130,7 +181,7 @@ export default function GameCard() {
         <View id="upper-section-row-7">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>TOTAL SCORE</Text>
+              <Text style={styles["text-md"]}>TOTAL SCORE</Text>
             </View>
             <View style={col2StyleNormal}>
               <View style={{ transform: [{ scaleX: 4 }] }}>
@@ -145,7 +196,7 @@ export default function GameCard() {
         <View id="upper-section-row-8">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>Bonus{"  "}</Text>
+              <Text style={styles["text-md"]}>Bonus{"  "}</Text>
               <Text style={{ ...styles["text-xs"], width: 55 }}>
                 If total score is 63 or over
               </Text>
@@ -161,7 +212,7 @@ export default function GameCard() {
         <View id="upper-section-row-9">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>Total{"    "}</Text>
+              <Text style={styles["text-md"]}>Total{"    "}</Text>
               <Text style={{ ...styles["text-xs"], width: 55 }}>
                 Of Upper Section
               </Text>
@@ -227,8 +278,12 @@ export default function GameCard() {
         <View id="lower-section-row-4">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Sm Straight </Text>
-              <Text style={{ ...styles["text-xs"], width: 50 }}>
+              <Text style={{ ...styles["text-sm"], width: 40 }}>
+                Sm Straight
+              </Text>
+              <Text
+                style={{ ...styles["text-xs"], width: 50, textAlign: "right" }}
+              >
                 (Sequence) of 4
               </Text>
             </View>
@@ -243,8 +298,12 @@ export default function GameCard() {
         <View id="lower-section-row-5">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Lg Straight{"  "}</Text>
-              <Text style={{ ...styles["text-xs"], width: 50 }}>
+              <Text style={{ ...styles["text-sm"], width: 40 }}>
+                Lg Straight
+              </Text>
+              <Text
+                style={{ ...styles["text-xs"], width: 50, textAlign: "right" }}
+              >
                 (Sequence) of 5
               </Text>
             </View>
@@ -259,7 +318,7 @@ export default function GameCard() {
         <View id="lower-section-row-6">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>YOT-Z{"     "}</Text>
+              <Text style={styles["text-md"]}>YOT-Z{"     "}</Text>
               <Text style={{ ...styles["text-xs"], width: 40 }}>
                 5 of a kind
               </Text>
@@ -275,7 +334,7 @@ export default function GameCard() {
         <View id="lower-section-row-7">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>Chance</Text>
+              <Text style={styles["text-md"]}>Chance</Text>
             </View>
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score Total Of All 5 Dice</Text>
@@ -288,7 +347,14 @@ export default function GameCard() {
         <View id="lower-section-row-8">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={{ width: 50, textAlign: "center" }}>
+              <Text
+                style={{
+                  ...styles["text-md"],
+                  width: 50,
+                  textAlign: "center",
+                  margin: "auto",
+                }}
+              >
                 YOT-Z BONUS
               </Text>
             </View>
@@ -342,7 +408,7 @@ export default function GameCard() {
         <View id="lower-section-row-9">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>TOTAL{"    "}</Text>
+              <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
               <Text style={{ ...styles["text-xs"], width: 40 }}>
                 Of Lower Section
               </Text>
@@ -360,7 +426,7 @@ export default function GameCard() {
         <View id="lower-section-row-10">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>TOTAL{"    "}</Text>
+              <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
               <Text style={{ ...styles["text-xs"], width: 40 }}>
                 Of Upper Section
               </Text>
@@ -378,7 +444,7 @@ export default function GameCard() {
         <View id="lower-section-row-11">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>GRAND TOTAL</Text>
+              <Text style={styles["text-md"]}>GRAND TOTAL</Text>
             </View>
             <View style={col2StyleNormal}>
               <View style={{ transform: [{ scaleX: 4 }] }}>
@@ -403,18 +469,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   col1Header: {
-    width: 110,
+    width: 100,
     borderWidth: 0.5,
     paddingLeft: 5,
     paddingRight: 5,
   },
   col1: {
-    width: 110,
+    width: 100,
     borderWidth: 0.5,
     paddingLeft: 5,
     paddingRight: 5,
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   col2: {
     width: 85,
@@ -439,6 +506,9 @@ const styles = StyleSheet.create({
   },
   "text-sm": {
     fontSize: 10,
+  },
+  "text-md": {
+    fontSize: 12,
   },
   leftAlign: {
     textAlign: "left",
