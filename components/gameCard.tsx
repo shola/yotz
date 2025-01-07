@@ -7,6 +7,8 @@ const Row = ({ children }: PropsWithChildren) => (
 );
 
 export default function GameCard() {
+  const col1HeaderStyle = { ...styles.col1Header, ...styles.centerAlignView };
+
   const col1StyleNormal = { ...styles.col1, ...styles.centerAlignView };
   const col2StyleNormal = { ...styles.col2, ...styles.centerAlignView };
   const col3StyleNormal = { ...styles.col3, ...styles.centerAlignView };
@@ -24,7 +26,7 @@ export default function GameCard() {
       <View id="upper-section">
         <View id="upper-section-header-row">
           <Row>
-            <View style={col1StyleNormal}>
+            <View style={col1HeaderStyle}>
               <Text style={styles.centerAlignText}>UPPER SECTION</Text>
             </View>
             <View style={col2StyleNormal}>
@@ -141,11 +143,9 @@ export default function GameCard() {
         <View id="upper-section-row-8">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>
-                Bonus{" "}
-                <Text style={styles["text-xs"]}>
-                  If total score is 63 or over
-                </Text>
+              <Text>Bonus{"  "}</Text>
+              <Text style={{ ...styles["text-xs"], width: 55 }}>
+                If total score is 63 or over
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -159,8 +159,9 @@ export default function GameCard() {
         <View id="upper-section-row-9">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>
-                Total <Text style={styles["text-xs"]}>Of Upper Section</Text>
+              <Text>Total{"    "}</Text>
+              <Text style={{ ...styles["text-xs"], width: 55 }}>
+                Of Upper Section
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -222,9 +223,9 @@ export default function GameCard() {
         <View id="lower-section-row-4">
           <Row>
             <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>
-                Sm Straight{" "}
-                <Text style={styles["text-xs"]}>(Sequence) of 4</Text>
+              <Text style={styles["text-sm"]}>Sm Straight </Text>
+              <Text style={{ ...styles["text-xs"], width: 50 }}>
+                (Sequence) of 4
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -238,9 +239,9 @@ export default function GameCard() {
         <View id="lower-section-row-5">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>
-                Lg Straight{" "}
-                <Text style={styles["text-xs"]}>(Sequence) of 5</Text>
+              <Text style={styles["text-sm"]}>Lg Straight{"  "}</Text>
+              <Text style={{ ...styles["text-xs"], width: 50 }}>
+                (Sequence) of 5
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -254,8 +255,9 @@ export default function GameCard() {
         <View id="lower-section-row-6">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>
-                YOT-Z <Text style={styles["text-xs"]}>5 of a kind</Text>
+              <Text>YOT-Z{"     "}</Text>
+              <Text style={{ ...styles["text-xs"], width: 40 }}>
+                5 of a kind
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -295,8 +297,9 @@ export default function GameCard() {
         <View id="lower-section-row-9">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>
-                TOTAL <Text style={styles["text-xs"]}>Of Lower Section</Text>
+              <Text>TOTAL{"    "}</Text>
+              <Text style={{ ...styles["text-xs"], width: 40 }}>
+                Of Lower Section
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -310,8 +313,9 @@ export default function GameCard() {
         <View id="lower-section-row-10">
           <Row>
             <View style={col1StyleNormal}>
-              <Text>
-                TOTAL <Text style={styles["text-xs"]}>Of Upper Section</Text>
+              <Text>TOTAL{"    "}</Text>
+              <Text style={{ ...styles["text-xs"], width: 40 }}>
+                Of Upper Section
               </Text>
             </View>
             <View style={col2StyleNormal}>
@@ -347,32 +351,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
   },
-  cell1: {
-    flex: 1,
-    flexDirection: "row",
+  col1Header: {
+    width: 110,
     borderWidth: 0.5,
     paddingLeft: 5,
     paddingRight: 5,
-    alignItems: "center",
-  },
-  cell2: {
-    flex: 2,
-    flexDirection: "row",
-    borderWidth: 0.5,
-    paddingLeft: 5,
-    paddingRight: 5,
-    alignItems: "center",
-  },
-  cell3: {
-    flex: 3,
-    flexDirection: "row",
-    borderWidth: 0.5,
-    paddingLeft: 5,
-    paddingRight: 5,
-    alignItems: "center",
   },
   col1: {
-    width: 125,
+    width: 110,
     borderWidth: 0.5,
     paddingLeft: 5,
     paddingRight: 5,
