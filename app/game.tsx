@@ -1,11 +1,8 @@
 import { Text, StyleSheet, View } from "react-native";
+import GameCard from "@/components/gameCard";
 
 export default function Game() {
-  return (
-    <View style={styles.body}>
-      <Text>You started a game!</Text>
-    </View>
-  );
+  return <GameCard />;
 }
 
 const styles = StyleSheet.create({
