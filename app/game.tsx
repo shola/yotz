@@ -21,13 +21,13 @@ export default function Game() {
 
   return (
     <View style={styles.body}>
-      <GameCard />
       <DiceContext.Provider
         value={{
           diceValues,
           setDiceValues,
         }}
       >
+        <GameCard />
         <DiceControl />
       </DiceContext.Provider>
     </View>

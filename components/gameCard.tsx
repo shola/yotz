@@ -1,8 +1,141 @@
-import { ReactNode, PropsWithChildren } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { DataTable, Icon, Divider } from "react-native-paper";
+import { Button, Icon } from "react-native-paper";
+import type { DieValue } from "@/app/game";
+import { DiceContext } from "@/app/game";
+import { Updater, useImmer } from "use-immer";
+
+interface CellScore {
+  val?: number;
+  final: boolean;
+}
+interface ScoreKeepersT {
+  upper: {
+    aces: CellScore;
+    twos: CellScore;
+    threes: CellScore;
+    fours: CellScore;
+    fives: CellScore;
+    sixes: CellScore;
+    prelim_total: CellScore;
+    bonus: CellScore;
+    total: CellScore;
+  };
+  lower: {
+    trips: CellScore;
+    quads: CellScore;
+    full_house: CellScore;
+    sm_straight: CellScore;
+    lg_straight: CellScore;
+    yotz: CellScore;
+    chance: CellScore;
+    lower_total: CellScore;
+    upper_total: CellScore;
+    grand_total: CellScore;
+  };
+}
+const initScoreKeepers = (): ScoreKeepersT => ({
+  upper: {
+    aces: { val: undefined, final: false },
+    twos: { val: undefined, final: false },
+    threes: { val: undefined, final: false },
+    fours: { val: undefined, final: false },
+    fives: { val: undefined, final: false },
+    sixes: { val: undefined, final: false },
+    prelim_total: { val: undefined, final: false },
+    bonus: { val: undefined, final: false },
+    total: { val: undefined, final: false },
+  },
+  lower: {
+    trips: { val: undefined, final: false },
+    quads: { val: undefined, final: false },
+    full_house: { val: undefined, final: false },
+    sm_straight: { val: undefined, final: false },
+    lg_straight: { val: undefined, final: false },
+    yotz: { val: undefined, final: false },
+    chance: { val: undefined, final: false },
+    lower_total: { val: undefined, final: false },
+    upper_total: { val: undefined, final: false },
+    grand_total: { val: undefined, final: false },
+  },
+});
+
+function isKey<T extends object>(obj: T, key: PropertyKey): key is keyof T {
+  return key in obj;
+}
+
+// TODO: put guards in place so scoreKeepers only get updated once, from null
+const scoreCalculators = {
+  upper: {
+    /* these are based on the current roll */
+    aces: (vals: DieValue[]) => vals.filter((v) => v === 1).length * 1,
+    twos: (vals: DieValue[]) => vals.filter((v) => v === 2).length * 2,
+    threes: (vals: DieValue[]) => vals.filter((v) => v === 3).length * 3,
+    fours: (vals: DieValue[]) => vals.filter((v) => v === 4).length * 4,
+    fives: (vals: DieValue[]) => vals.filter((v) => v === 5).length * 5,
+    sixes: (vals: DieValue[]) => vals.filter((v) => v === 6).length * 6,
+    /* 
+    These should only be based on the completed rolls. They should happen AFTER
+    All of the ones above. I can't guarantee the order that keys are access though,
+    so this should probably be a map
+    */
+    prelim_total: () => 0,
+    // [
+    //   scoreKeepers.upper.aces,
+    //   scoreKeepers.upper.twos,
+    //   scoreKeepers.upper.threes,
+    //   scoreKeepers.upper.fours,
+    //   scoreKeepers.upper.fives,
+    //   scoreKeepers.upper.sixes,
+    // ]
+    //   .filter((v) => v !== null)
+    //   .reduce((prev, curr) => prev + (curr.val ?? 0), 0),
+    bonus: () => 0,
+    total: () => 0,
+  },
+  lower: {
+    trips: null,
+    quads: null,
+    full_house: null,
+    sm_straight: null,
+    lg_straight: null,
+    yotz: null,
+    chance: null,
+    lower_total: null,
+    upper_total: null,
+    grand_total: null,
+  },
+};
+
+function clearAllTempScores() {}
+
+function setAllTempScores(
+  diceValues: DieValue[],
+  scoreKeepers: ScoreKeepersT,
+  updateScoreKeepers: Updater<ScoreKeepersT>
+) {
+  for (const k in scoreKeepers.upper) {
+    // Have you verify that the key indexes an object before accessing
+    if (!isKey(scoreKeepers.upper, k)) continue;
+
+    // if final, skip
+    if (scoreKeepers.upper[k].final) continue;
+
+    // set temp value
+    // first, you need to verify that the key also indexes the helper
+    if (isKey(scoreCalculators.upper, k)) {
+      updateScoreKeepers((draft) => {
+        draft.upper[k].val = scoreCalculators.upper[k](diceValues);
+      });
+    }
+  }
+  console.log({ scoreKeepersUpper: scoreKeepers.upper });
+}
 
 export default function GameCard() {
+  const { diceValues } = useContext(DiceContext);
+  const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
+
   const col1HeaderStyle = { ...styles.col1Header, ...styles.centerAlignView };
 
   const col1StyleNormal = {
@@ -20,6 +153,12 @@ export default function GameCard() {
     ...styles["text-xs"],
     ...styles.centerAlignText,
   };
+
+  useEffect(() => {
+    // Whenever diceValues changes, all temp scores need to be updated
+    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
+  }, [diceValues]);
+
   return (
     <View style={styles.card}>
       <View id="upper-section">
@@ -49,7 +188,17 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>Count and add only Aces</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.upper.aces.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.upper.aces.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.upper.aces.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -66,7 +215,17 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>Count and add only Twos</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.upper.twos.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.upper.twos.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.upper.twos.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -83,7 +242,17 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>Count and add only Threes</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.upper.threes.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.upper.threes.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.upper.threes.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -100,7 +269,17 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>Count and add only Fours</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.upper.fours.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.upper.fours.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.upper.fours.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -117,7 +296,17 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>Count and add only Fives</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.upper.fives.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.upper.fives.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.upper.fives.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -134,7 +323,17 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>Count and add only Sixes</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.upper.sixes.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.upper.sixes.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.upper.sixes.val}
+              </Button>
             </View>
           </View>
         </View>
