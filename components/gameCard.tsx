@@ -147,8 +147,42 @@ const scoreCalculators = {
 
       return hasTrips && hasPair ? 25 : 0;
     },
-    sm_straight: () => undefined,
-    lg_straight: () => undefined,
+    sm_straight: (vals: DieValue[]) => {
+      const sortedVals = vals.toSorted();
+      let consecutiveCount = 1;
+
+      for (let i = 0; i < vals.length - 1; i++) {
+        const current = vals[i];
+        const next = vals[i + 1];
+
+        if (next === current + 1) {
+          consecutiveCount++;
+        } else {
+          consecutiveCount = 1;
+        }
+
+        if (consecutiveCount === 4) return 30;
+      }
+      return 0;
+    },
+    lg_straight: (vals: DieValue[]) => {
+      const sortedVals = vals.toSorted();
+      let consecutiveCount = 1;
+
+      for (let i = 0; i < vals.length - 1; i++) {
+        const current = vals[i];
+        const next = vals[i + 1];
+
+        if (next === current + 1) {
+          consecutiveCount++;
+        } else {
+          consecutiveCount = 1;
+        }
+
+        if (consecutiveCount === 5) return 40;
+      }
+      return 0;
+    },
     yotz: () => undefined,
     chance: () => undefined,
     lower_total: () => undefined,
@@ -571,7 +605,19 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Score 30</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={
+                  scoreKeepers.lower.sm_straight.final ? "black" : "red"
+                }
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.sm_straight.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.sm_straight.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -591,7 +637,19 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Score 40</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={
+                  scoreKeepers.lower.lg_straight.final ? "black" : "red"
+                }
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.lg_straight.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.lg_straight.val}
+              </Button>
             </View>
           </View>
         </View>
