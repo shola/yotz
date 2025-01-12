@@ -9,31 +9,36 @@ interface CellScore {
   val?: number;
   final: boolean;
 }
-interface ScoreKeepersT {
+interface Scores<T> {
   upper: {
-    aces: CellScore;
-    twos: CellScore;
-    threes: CellScore;
-    fours: CellScore;
-    fives: CellScore;
-    sixes: CellScore;
-    prelim_total: CellScore;
-    bonus: CellScore;
-    total: CellScore;
+    aces: T;
+    twos: T;
+    threes: T;
+    fours: T;
+    fives: T;
+    sixes: T;
+  };
+  upperAggregate: {
+    prelim_total: T;
+    bonus: T;
+    total: T;
   };
   lower: {
-    trips: CellScore;
-    quads: CellScore;
-    full_house: CellScore;
-    sm_straight: CellScore;
-    lg_straight: CellScore;
-    yotz: CellScore;
-    chance: CellScore;
-    lower_total: CellScore;
-    upper_total: CellScore;
-    grand_total: CellScore;
+    trips: T;
+    quads: T;
+    full_house: T;
+    sm_straight: T;
+    lg_straight: T;
+    yotz: T;
+    chance: T;
+    lower_total: T;
+    upper_total: T;
+    grand_total: T;
   };
 }
+
+type ScoreKeepersT = Scores<CellScore>;
+
 const initScoreKeepers = (): ScoreKeepersT => ({
   upper: {
     aces: { val: undefined, final: false },
@@ -42,6 +47,8 @@ const initScoreKeepers = (): ScoreKeepersT => ({
     fours: { val: undefined, final: false },
     fives: { val: undefined, final: false },
     sixes: { val: undefined, final: false },
+  },
+  upperAggregate: {
     prelim_total: { val: undefined, final: false },
     bonus: { val: undefined, final: false },
     total: { val: undefined, final: false },
@@ -64,7 +71,15 @@ function isKey<T extends object>(obj: T, key: PropertyKey): key is keyof T {
   return key in obj;
 }
 
+type ScoreCalculatorsT = Scores<
+  | ((vals: DieValue[]) => number)
+  | ((upper: ScoreKeepersT["upper"]) => number)
+  | ((upperAggregate: ScoreKeepersT["upperAggregate"]) => number)
+  | (() => undefined)
+>;
 // TODO: put guards in place so scoreKeepers only get updated once, from null
+// TODO: I may need to separate the cells by those that are independent, and dependent.
+// prelim_total being the first dependent cell
 const scoreCalculators = {
   upper: {
     /* these are based on the current roll */
@@ -74,36 +89,39 @@ const scoreCalculators = {
     fours: (vals: DieValue[]) => vals.filter((v) => v === 4).length * 4,
     fives: (vals: DieValue[]) => vals.filter((v) => v === 5).length * 5,
     sixes: (vals: DieValue[]) => vals.filter((v) => v === 6).length * 6,
-    /* 
-    These should only be based on the completed rolls. They should happen AFTER
-    All of the ones above. I can't guarantee the order that keys are access though,
-    so this should probably be a map
-    */
-    prelim_total: () => 0,
-    // [
-    //   scoreKeepers.upper.aces,
-    //   scoreKeepers.upper.twos,
-    //   scoreKeepers.upper.threes,
-    //   scoreKeepers.upper.fours,
-    //   scoreKeepers.upper.fives,
-    //   scoreKeepers.upper.sixes,
-    // ]
-    //   .filter((v) => v !== null)
-    //   .reduce((prev, curr) => prev + (curr.val ?? 0), 0),
-    bonus: () => 0,
-    total: () => 0,
+  },
+  upperAggregate: {
+    prelim_total: (upper: ScoreKeepersT["upper"]) => {
+      const filtered = Object.values(upper).filter(
+        (score: CellScore) => score.final
+      );
+      const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
+      console.log({ filtered, summed });
+      return summed;
+    },
+    bonus: (upperAggregate: ScoreKeepersT["upperAggregate"]) => {
+      const prelim_total =
+        upperAggregate.prelim_total && (upperAggregate.prelim_total.val ?? 0);
+      return prelim_total >= 63 ? 35 : 0;
+    },
+    total: (upperAggregate: ScoreKeepersT["upperAggregate"]) => {
+      const prelim_total =
+        upperAggregate.prelim_total && (upperAggregate.prelim_total.val ?? 0);
+      const bonus = upperAggregate.bonus && (upperAggregate.bonus.val ?? 0);
+      return prelim_total + bonus;
+    },
   },
   lower: {
-    trips: null,
-    quads: null,
-    full_house: null,
-    sm_straight: null,
-    lg_straight: null,
-    yotz: null,
-    chance: null,
-    lower_total: null,
-    upper_total: null,
-    grand_total: null,
+    trips: () => undefined,
+    quads: () => undefined,
+    full_house: () => undefined,
+    sm_straight: () => undefined,
+    lg_straight: () => undefined,
+    yotz: () => undefined,
+    chance: () => undefined,
+    lower_total: () => undefined,
+    upper_total: () => undefined,
+    grand_total: () => undefined,
   },
 };
 
@@ -115,17 +133,39 @@ function setAllTempScores(
   updateScoreKeepers: Updater<ScoreKeepersT>
 ) {
   for (const k in scoreKeepers.upper) {
-    // Have you verify that the key indexes an object before accessing
+    // Must verify that the key indexes an object before accessing
     if (!isKey(scoreKeepers.upper, k)) continue;
 
-    // if final, skip
+    // if finalized, skip
     if (scoreKeepers.upper[k].final) continue;
 
-    // set temp value
     // first, you need to verify that the key also indexes the helper
-    if (isKey(scoreCalculators.upper, k)) {
+    // set temp value
+    // if (isKey(scoreCalculators.upper, k)) {
+    updateScoreKeepers((draft) => {
+      draft.upper[k].val = scoreCalculators.upper[k](diceValues);
+    });
+    // }
+  }
+
+  // Since these values are calculated based off of previous rolls, evaluate
+  // them next in line
+  for (const k in scoreKeepers.upperAggregate) {
+    if (!isKey(scoreKeepers.upperAggregate, k)) continue;
+
+    if (k === "prelim_total") {
       updateScoreKeepers((draft) => {
-        draft.upper[k].val = scoreCalculators.upper[k](diceValues);
+        draft.upperAggregate[k].val = scoreCalculators.upperAggregate[k](
+          scoreKeepers.upper
+        );
+      });
+    }
+
+    if (k === "bonus" || k === "total") {
+      updateScoreKeepers((draft) => {
+        draft.upperAggregate[k].val = scoreCalculators.upperAggregate[k](
+          scoreKeepers.upperAggregate
+        );
       });
     }
   }
@@ -157,7 +197,7 @@ export default function GameCard() {
   useEffect(() => {
     // Whenever diceValues changes, all temp scores need to be updated
     setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
-  }, [diceValues]);
+  }, [diceValues, scoreKeepers]);
 
   return (
     <View style={styles.card}>
@@ -340,6 +380,7 @@ export default function GameCard() {
         <View id="upper-section-row-7">
           <View style={styles.row}>
             <View style={col1StyleNormal}>
+              {/* This score can not be clicked on */}
               <Text style={styles["text-md"]}>TOTAL SCORE</Text>
             </View>
             <View style={col2StyleNormal}>
@@ -348,13 +389,14 @@ export default function GameCard() {
               </View>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Text>{scoreKeepers.upperAggregate.prelim_total.val}</Text>
             </View>
           </View>
         </View>
         <View id="upper-section-row-8">
           <View style={styles.row}>
             <View style={col1StyleNormal}>
+              {/* This score can not be clicked on */}
               <Text style={styles["text-md"]}>Bonus{"  "}</Text>
               <Text style={{ ...styles["text-xs"], width: 55 }}>
                 If total score is 63 or over
@@ -364,7 +406,7 @@ export default function GameCard() {
               <Text style={col2TextStyleSm}>SCORE 35</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Text>{scoreKeepers.upperAggregate.bonus.val}</Text>
             </View>
           </View>
         </View>
@@ -382,7 +424,7 @@ export default function GameCard() {
               </View>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Text>{scoreKeepers.upperAggregate.total.val}</Text>
             </View>
           </View>
         </View>
