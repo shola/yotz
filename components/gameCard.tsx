@@ -112,9 +112,41 @@ const scoreCalculators = {
     },
   },
   lower: {
-    trips: () => undefined,
-    quads: () => undefined,
-    full_house: () => undefined,
+    /* 
+    check each for trips of each DiceValue. if test passes, sum all diceValues.
+    Start with the biggest and work way down to smallest.
+    FindBiggestTrips
+    */
+    trips: (vals: DieValue[]) => {
+      const diceCounts = Object.groupBy(vals, (num) => num);
+
+      const hasTrips = Object.values(diceCounts).find(
+        (list) => list.length >= 3
+      );
+
+      return hasTrips ? vals.reduce((prev, curr) => prev + curr, 0) : 0;
+    },
+    quads: (vals: DieValue[]) => {
+      const diceCounts = Object.groupBy(vals, (num) => num);
+
+      const hasQuads = Object.values(diceCounts).find(
+        (list) => list.length >= 4
+      );
+
+      return hasQuads ? vals.reduce((prev, curr) => prev + curr, 0) : 0;
+    },
+    full_house: (vals: DieValue[]) => {
+      const diceCounts = Object.groupBy(vals, (num) => num);
+
+      const hasTrips = Object.values(diceCounts).find(
+        (list) => list.length === 3
+      );
+      const hasPair = Object.values(diceCounts).find(
+        (list) => list.length === 2
+      );
+
+      return hasTrips && hasPair ? 25 : 0;
+    },
     sm_straight: () => undefined,
     lg_straight: () => undefined,
     yotz: () => undefined,
@@ -139,13 +171,23 @@ function setAllTempScores(
     // if finalized, skip
     if (scoreKeepers.upper[k].final) continue;
 
-    // first, you need to verify that the key also indexes the helper
     // set temp value
-    // if (isKey(scoreCalculators.upper, k)) {
     updateScoreKeepers((draft) => {
       draft.upper[k].val = scoreCalculators.upper[k](diceValues);
     });
-    // }
+  }
+  for (const k in scoreKeepers.lower) {
+    // Must verify that the key indexes an object before accessing
+    if (!isKey(scoreKeepers.lower, k)) continue;
+
+    // if finalized, skip
+    if (scoreKeepers.lower[k].final) continue;
+
+    // first, you need to verify that the key also indexes the helper
+    // set temp value
+    updateScoreKeepers((draft) => {
+      draft.lower[k].val = scoreCalculators.lower[k](diceValues);
+    });
   }
 
   // Since these values are calculated based off of previous rolls, evaluate
@@ -169,7 +211,6 @@ function setAllTempScores(
       });
     }
   }
-  console.log({ scoreKeepersUpper: scoreKeepers.upper });
 }
 
 export default function GameCard() {
@@ -448,7 +489,17 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.lower.trips.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.trips.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.trips.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -463,7 +514,17 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.lower.quads.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.quads.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.quads.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -478,7 +539,19 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Score 25</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={
+                  scoreKeepers.lower.full_house.final ? "black" : "red"
+                }
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.full_house.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.full_house.val}
+              </Button>
             </View>
           </View>
         </View>
