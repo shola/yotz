@@ -183,8 +183,18 @@ const scoreCalculators = {
       }
       return 0;
     },
-    yotz: () => undefined,
-    chance: () => undefined,
+    yotz: (vals: DieValue[]) => {
+      const diceCounts = Object.groupBy(vals, (num) => num);
+
+      const hasYotZ = Object.values(diceCounts).find(
+        (list) => list.length === 5
+      );
+
+      return hasYotZ ? 50 : 0;
+    },
+    chance: (vals: DieValue[]) => {
+      return vals.reduce((prev, curr) => prev + curr, 0);
+    },
     lower_total: () => undefined,
     upper_total: () => undefined,
     grand_total: () => undefined,
@@ -665,7 +675,17 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Score 50</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.lower.yotz.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.yotz.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.yotz.val}
+              </Button>
             </View>
           </View>
         </View>
@@ -678,7 +698,17 @@ export default function GameCard() {
               <Text style={col2TextStyleXs}>Score Total Of All 5 Dice</Text>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Button
+                textColor={scoreKeepers.lower.chance.final ? "black" : "red"}
+                onPress={() => {
+                  (() =>
+                    updateScoreKeepers((draft) => {
+                      draft.lower.chance.final = true;
+                    }))();
+                }}
+              >
+                {scoreKeepers.lower.chance.val}
+              </Button>
             </View>
           </View>
         </View>
