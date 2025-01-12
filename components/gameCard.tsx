@@ -31,7 +31,9 @@ interface Scores<T> {
     lg_straight: T;
     yotz: T;
     chance: T;
-    lower_total: T;
+  };
+  lowerAggregate: {
+    prelim_total: T;
     upper_total: T;
     grand_total: T;
   };
@@ -61,7 +63,9 @@ const initScoreKeepers = (): ScoreKeepersT => ({
     lg_straight: { val: undefined, final: false },
     yotz: { val: undefined, final: false },
     chance: { val: undefined, final: false },
-    lower_total: { val: undefined, final: false },
+  },
+  lowerAggregate: {
+    prelim_total: { val: undefined, final: false },
     upper_total: { val: undefined, final: false },
     grand_total: { val: undefined, final: false },
   },
@@ -195,9 +199,21 @@ const scoreCalculators = {
     chance: (vals: DieValue[]) => {
       return vals.reduce((prev, curr) => prev + curr, 0);
     },
-    lower_total: () => undefined,
-    upper_total: () => undefined,
-    grand_total: () => undefined,
+  },
+  lowerAggregate: {
+    prelim_total: (lower: ScoreKeepersT["lower"]) => {
+      const filtered = Object.values(lower).filter(
+        (score: CellScore) => score.final
+      );
+      const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
+      console.log({ filtered, summed });
+      return summed;
+    },
+    upper_total: (upperAggregate: ScoreKeepersT["upperAggregate"]) =>
+      upperAggregate.total.val,
+    grand_total: (lowerAggregate: ScoreKeepersT["lowerAggregate"]) =>
+      (lowerAggregate.prelim_total.val ?? 0) +
+      (lowerAggregate.upper_total.val ?? 0),
   },
 };
 
@@ -251,6 +267,34 @@ function setAllTempScores(
       updateScoreKeepers((draft) => {
         draft.upperAggregate[k].val = scoreCalculators.upperAggregate[k](
           scoreKeepers.upperAggregate
+        );
+      });
+    }
+  }
+
+  for (const k in scoreKeepers.lowerAggregate) {
+    if (!isKey(scoreKeepers.lowerAggregate, k)) continue;
+
+    if (k === "prelim_total") {
+      updateScoreKeepers((draft) => {
+        draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
+          scoreKeepers.lower
+        );
+      });
+    }
+
+    if (k === "upper_total") {
+      updateScoreKeepers((draft) => {
+        draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
+          scoreKeepers.upperAggregate
+        );
+      });
+    }
+
+    if (k === "grand_total") {
+      updateScoreKeepers((draft) => {
+        draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
+          scoreKeepers.lowerAggregate
         );
       });
     }
@@ -787,7 +831,7 @@ export default function GameCard() {
               </View>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Text>{scoreKeepers.lowerAggregate.prelim_total.val}</Text>
             </View>
           </View>
         </View>
@@ -805,7 +849,7 @@ export default function GameCard() {
               </View>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Text>{scoreKeepers.lowerAggregate.upper_total.val}</Text>
             </View>
           </View>
         </View>
@@ -820,7 +864,7 @@ export default function GameCard() {
               </View>
             </View>
             <View style={col3StyleNormal}>
-              <Text></Text>
+              <Text>{scoreKeepers.lowerAggregate.grand_total.val}</Text>
             </View>
           </View>
         </View>
