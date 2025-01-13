@@ -169,20 +169,12 @@ const scoreCalculators = {
         if (next === current + 1) {
           consecutiveCount++;
         } else {
-          console.log(current, next, i);
           consecutiveCount = 1;
         }
 
-        if (consecutiveCount === 4) {
-          console.log("found a small straight");
-          return 30;
-        }
+        if (consecutiveCount === 4) return 30;
       }
-      console.log(
-        "didn't found a small straight",
-        sortedVals,
-        consecutiveCount
-      );
+
       return 0;
     },
     lg_straight: (vals: DieValue[]) => {
@@ -199,10 +191,7 @@ const scoreCalculators = {
           consecutiveCount = 1;
         }
 
-        if (consecutiveCount === 5) {
-          console.log("found a large straight");
-          return 40;
-        }
+        if (consecutiveCount === 5) return 40;
       }
       return 0;
     },
