@@ -5,6 +5,14 @@ import type { DieValue } from "@/app/game";
 import { DiceContext } from "@/app/game";
 import { Updater, useImmer } from "use-immer";
 
+function groupByVal<T extends number>(arr: T[]): { [key in T]: T[] } {
+  const res: { [key in T]?: T[] } = {};
+  arr.forEach((item) => {
+    res[item] = arr.filter((a) => item === a);
+  });
+  return { [arr[0]]: [arr[0]] };
+}
+
 interface CellScore {
   val?: number;
   final: boolean;
@@ -122,7 +130,7 @@ const scoreCalculators = {
     FindBiggestTrips
     */
     trips: (vals: DieValue[]) => {
-      const diceCounts = Object.groupBy(vals, (num) => num);
+      const diceCounts = groupByVal(vals);
 
       const hasTrips = Object.values(diceCounts).find(
         (list) => list.length >= 3
@@ -131,7 +139,7 @@ const scoreCalculators = {
       return hasTrips ? vals.reduce((prev, curr) => prev + curr, 0) : 0;
     },
     quads: (vals: DieValue[]) => {
-      const diceCounts = Object.groupBy(vals, (num) => num);
+      const diceCounts = groupByVal(vals);
 
       const hasQuads = Object.values(diceCounts).find(
         (list) => list.length >= 4
@@ -140,7 +148,7 @@ const scoreCalculators = {
       return hasQuads ? vals.reduce((prev, curr) => prev + curr, 0) : 0;
     },
     full_house: (vals: DieValue[]) => {
-      const diceCounts = Object.groupBy(vals, (num) => num);
+      const diceCounts = groupByVal(vals);
 
       const hasTrips = Object.values(diceCounts).find(
         (list) => list.length === 3
@@ -152,7 +160,7 @@ const scoreCalculators = {
       return hasTrips && hasPair ? 25 : 0;
     },
     sm_straight: (vals: DieValue[]) => {
-      const sortedVals = vals.toSorted();
+      const sortedVals = [...vals].sort();
       let consecutiveCount = 1;
 
       for (let i = 0; i < vals.length - 1; i++) {
@@ -170,7 +178,7 @@ const scoreCalculators = {
       return 0;
     },
     lg_straight: (vals: DieValue[]) => {
-      const sortedVals = vals.toSorted();
+      const sortedVals = [...vals].sort();
       let consecutiveCount = 1;
 
       for (let i = 0; i < vals.length - 1; i++) {
@@ -188,7 +196,7 @@ const scoreCalculators = {
       return 0;
     },
     yotz: (vals: DieValue[]) => {
-      const diceCounts = Object.groupBy(vals, (num) => num);
+      const diceCounts = groupByVal(vals);
 
       const hasYotZ = Object.values(diceCounts).find(
         (list) => list.length === 5
@@ -356,9 +364,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Aces</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.upper.aces.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -367,7 +377,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.upper.aces.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -383,9 +393,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Twos</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.upper.twos.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -394,7 +406,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.upper.twos.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -410,9 +422,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Threes</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.upper.threes.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -421,7 +435,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.upper.threes.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -437,9 +451,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Fours</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.upper.fours.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -448,7 +464,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.upper.fours.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -464,9 +480,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Fives</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.upper.fives.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -475,7 +493,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.upper.fives.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -491,9 +509,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleSm}>Count and add only Sixes</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.upper.sixes.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -502,7 +522,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.upper.sixes.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -517,7 +537,7 @@ export default function GameCard() {
                 <Icon source="arrow-right-thin" size={30} />
               </View>
             </View>
-            <View style={col3StyleNormal}>
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text>{scoreKeepers.upperAggregate.prelim_total.val}</Text>
             </View>
           </View>
@@ -576,9 +596,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.lower.trips.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -587,7 +609,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.trips.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -601,9 +623,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.lower.quads.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -612,7 +636,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.quads.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -626,11 +650,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score 25</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={
-                  scoreKeepers.lower.full_house.final ? "black" : "red"
-                }
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -639,7 +663,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.full_house.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -658,11 +682,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score 30</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={
-                  scoreKeepers.lower.sm_straight.final ? "black" : "red"
-                }
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -671,7 +695,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.sm_straight.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -690,11 +714,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score 40</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={
-                  scoreKeepers.lower.lg_straight.final ? "black" : "red"
-                }
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -703,7 +727,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.lg_straight.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -718,9 +742,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score 50</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.lower.yotz.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -729,7 +755,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.yotz.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
@@ -741,9 +767,11 @@ export default function GameCard() {
             <View style={col2StyleNormal}>
               <Text style={col2TextStyleXs}>Score Total Of All 5 Dice</Text>
             </View>
-            <View style={col3StyleNormal}>
-              <Button
-                textColor={scoreKeepers.lower.chance.final ? "black" : "red"}
+            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+              <Text
+                style={{
+                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
@@ -752,7 +780,7 @@ export default function GameCard() {
                 }}
               >
                 {scoreKeepers.lower.chance.val}
-              </Button>
+              </Text>
             </View>
           </View>
         </View>
