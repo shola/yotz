@@ -208,12 +208,12 @@ const scoreCalculators = {
     },
   },
   lowerAggregate: {
-    prelim_total: (lower: ScoreKeepersT["lower"]) => {
+    prelim_total: (lower: ScoreKeepersT["lower"], yotzBonus: number) => {
       const filtered = Object.values(lower).filter(
         (score: CellScore) => score.final
       );
       const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
-      return summed;
+      return summed + yotzBonus;
     },
     upper_total: (upperAggregate: ScoreKeepersT["upperAggregate"]) =>
       upperAggregate.total.val,
@@ -228,7 +228,8 @@ function clearAllTempScores() {}
 function setAllTempScores(
   diceValues: DieValue[],
   scoreKeepers: ScoreKeepersT,
-  updateScoreKeepers: Updater<ScoreKeepersT>
+  updateScoreKeepers: Updater<ScoreKeepersT>,
+  yotzBonus: number
 ) {
   for (const k in scoreKeepers.upper) {
     // Must verify that the key indexes an object before accessing
@@ -284,7 +285,8 @@ function setAllTempScores(
     if (k === "prelim_total") {
       updateScoreKeepers((draft) => {
         draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
-          scoreKeepers.lower
+          scoreKeepers.lower,
+          yotzBonus
         );
       });
     }
@@ -338,6 +340,7 @@ function createStyles() {
 export default function GameCard() {
   const { diceValues, shuffleDiceValues } = useContext(DiceContext);
   const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
+  const [yotzBonus, setYotzBonus] = useState(0);
   const {
     col1HeaderStyle,
     col1StyleNormal,
@@ -349,8 +352,22 @@ export default function GameCard() {
 
   useEffect(() => {
     // Whenever diceValues changes, all temp scores need to be updated
-    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
+    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers, yotzBonus);
   }, [diceValues, scoreKeepers]);
+
+  useEffect(() => {
+    if (!scoreKeepers.lower.yotz.final || scoreKeepers.lower.yotz.val !== 50)
+      return;
+
+    const isCurrentYotz = !!Object.values(groupByVal(diceValues)).find(
+      (group) => group.length === 5
+    );
+
+    if (!isCurrentYotz) return;
+
+    const newYotzBonus = yotzBonus + 100;
+    setYotzBonus(newYotzBonus);
+  }, [diceValues]);
 
   return (
     <View style={styles.card}>
@@ -845,17 +862,43 @@ export default function GameCard() {
                     flexDirection: "row",
                   }}
                 >
+                  {/* TODO: changing the dice will not reverse the auto
+                  counting of the yotz bonus. Fix this bug*/}
                   <View style={styles.bonusCell}>
-                    <Text> </Text>
+                    {yotzBonus >= 100 && (
+                      <View
+                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
+                      >
+                        <Icon source="check" size={20} />
+                      </View>
+                    )}
                   </View>
                   <View style={styles.bonusCell}>
-                    <Text> </Text>
+                    {yotzBonus >= 200 && (
+                      <View
+                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
+                      >
+                        <Icon source="check" size={20} />
+                      </View>
+                    )}
                   </View>
                   <View style={styles.bonusCell}>
-                    <Text> </Text>
+                    {yotzBonus >= 300 && (
+                      <View
+                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
+                      >
+                        <Icon source="check" size={20} />
+                      </View>
+                    )}
                   </View>
                   <View style={styles.bonusCell}>
-                    <Text> </Text>
+                    {yotzBonus >= 400 && (
+                      <View
+                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
+                      >
+                        <Icon source="check" size={20} />
+                      </View>
+                    )}
                   </View>
                 </View>
               </View>
@@ -868,7 +911,7 @@ export default function GameCard() {
                 </View>
                 <View style={col3StyleNormal}>
                   <View>
-                    <Text></Text>
+                    <Text>{yotzBonus}</Text>
                   </View>
                 </View>
               </View>
