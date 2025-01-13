@@ -5,12 +5,12 @@ import type { DieValue } from "@/components/diceContext";
 import { DiceContext } from "@/components/diceContext";
 import { Updater, useImmer } from "use-immer";
 
-function groupByVal<T extends number>(arr: T[]): { [key in T]: T[] } {
-  const res: { [key in T]?: T[] } = {};
+function groupByVal<T extends DieValue>(arr: T[]): { [key in T]: T[] } {
+  const res: { [key in T]: T[] } = { [arr[0]]: [] };
   arr.forEach((item) => {
     res[item] = arr.filter((a) => item === a);
   });
-  return { [arr[0]]: [arr[0]] };
+  return res;
 }
 
 interface CellScore {
@@ -197,7 +197,6 @@ const scoreCalculators = {
     },
     yotz: (vals: DieValue[]) => {
       const diceCounts = groupByVal(vals);
-
       const hasYotZ = Object.values(diceCounts).find(
         (list) => list.length === 5
       );
