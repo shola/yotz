@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Button, Icon } from "react-native-paper";
-import type { DieValue } from "@/app/game";
-import { DiceContext } from "@/app/game";
+import type { DieValue } from "@/components/diceContext";
+import { DiceContext } from "@/components/diceContext";
 import { Updater, useImmer } from "use-immer";
 
 function groupByVal<T extends number>(arr: T[]): { [key in T]: T[] } {
@@ -108,7 +108,6 @@ const scoreCalculators = {
         (score: CellScore) => score.final
       );
       const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
-      console.log({ filtered, summed });
       return summed;
     },
     bonus: (upperAggregate: ScoreKeepersT["upperAggregate"]) => {
@@ -163,27 +162,36 @@ const scoreCalculators = {
       const sortedVals = [...vals].sort();
       let consecutiveCount = 1;
 
-      for (let i = 0; i < vals.length - 1; i++) {
-        const current = vals[i];
-        const next = vals[i + 1];
+      for (let i = 0; i < sortedVals.length - 1; i++) {
+        const current = sortedVals[i];
+        const next = sortedVals[i + 1];
 
         if (next === current + 1) {
           consecutiveCount++;
         } else {
+          console.log(current, next, i);
           consecutiveCount = 1;
         }
 
-        if (consecutiveCount === 4) return 30;
+        if (consecutiveCount === 4) {
+          console.log("found a small straight");
+          return 30;
+        }
       }
+      console.log(
+        "didn't found a small straight",
+        sortedVals,
+        consecutiveCount
+      );
       return 0;
     },
     lg_straight: (vals: DieValue[]) => {
       const sortedVals = [...vals].sort();
       let consecutiveCount = 1;
 
-      for (let i = 0; i < vals.length - 1; i++) {
-        const current = vals[i];
-        const next = vals[i + 1];
+      for (let i = 0; i < sortedVals.length - 1; i++) {
+        const current = sortedVals[i];
+        const next = sortedVals[i + 1];
 
         if (next === current + 1) {
           consecutiveCount++;
@@ -191,7 +199,10 @@ const scoreCalculators = {
           consecutiveCount = 1;
         }
 
-        if (consecutiveCount === 5) return 40;
+        if (consecutiveCount === 5) {
+          console.log("found a large straight");
+          return 40;
+        }
       }
       return 0;
     },
@@ -214,7 +225,6 @@ const scoreCalculators = {
         (score: CellScore) => score.final
       );
       const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
-      console.log({ filtered, summed });
       return summed;
     },
     upper_total: (upperAggregate: ScoreKeepersT["upperAggregate"]) =>
@@ -309,10 +319,7 @@ function setAllTempScores(
   }
 }
 
-export default function GameCard() {
-  const { diceValues } = useContext(DiceContext);
-  const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
-
+function createStyles() {
   const col1HeaderStyle = { ...styles.col1Header, ...styles.centerAlignView };
 
   const col1StyleNormal = {
@@ -330,6 +337,27 @@ export default function GameCard() {
     ...styles["text-xs"],
     ...styles.centerAlignText,
   };
+  return {
+    col1HeaderStyle,
+    col1StyleNormal,
+    col2StyleNormal,
+    col3StyleNormal,
+    col2TextStyleSm,
+    col2TextStyleXs,
+  };
+}
+
+export default function GameCard() {
+  const { diceValues, shuffleDiceValues } = useContext(DiceContext);
+  const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
+  const {
+    col1HeaderStyle,
+    col1StyleNormal,
+    col2StyleNormal,
+    col3StyleNormal,
+    col2TextStyleSm,
+    col2TextStyleXs,
+  } = createStyles();
 
   useEffect(() => {
     // Whenever diceValues changes, all temp scores need to be updated
@@ -367,13 +395,15 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.upper.aces.final ? "black" : "red",
                 }}
                 onPress={() => {
+                  // if (scoreKeepers.upper.twos.final)
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.upper.aces.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.upper.aces.val}
@@ -403,6 +433,7 @@ export default function GameCard() {
                     updateScoreKeepers((draft) => {
                       draft.upper.twos.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.upper.twos.val}
@@ -425,13 +456,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.upper.threes.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.upper.threes.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.upper.threes.val}
@@ -454,13 +486,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.upper.fours.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.upper.fours.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.upper.fours.val}
@@ -483,13 +516,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.upper.fives.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.upper.fives.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.upper.fives.val}
@@ -512,13 +546,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.upper.sixes.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.upper.sixes.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.upper.sixes.val}
@@ -599,13 +634,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.trips.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.trips.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.trips.val}
@@ -626,13 +662,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.quads.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.quads.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.quads.val}
@@ -653,13 +690,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.full_house.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.full_house.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.full_house.val}
@@ -685,13 +723,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.sm_straight.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.sm_straight.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.sm_straight.val}
@@ -717,13 +756,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.lg_straight.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.lg_straight.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.lg_straight.val}
@@ -745,13 +785,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.yotz.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.yotz.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.yotz.val}
@@ -770,13 +811,14 @@ export default function GameCard() {
             <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
               <Text
                 style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
+                  color: scoreKeepers.lower.chance.final ? "black" : "red",
                 }}
                 onPress={() => {
                   (() =>
                     updateScoreKeepers((draft) => {
                       draft.lower.chance.final = true;
                     }))();
+                  shuffleDiceValues();
                 }}
               >
                 {scoreKeepers.lower.chance.val}
