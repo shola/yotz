@@ -40,7 +40,8 @@ function createStyles() {
   };
 }
 
-interface UpperSectionRowBaseProps {
+function upperSectionRowParent() {}
+interface UpperSectionRowBase {
   label: string;
   num: number;
   scoreKeepers: ScoreKeepers;
@@ -53,11 +54,10 @@ function UpperSectionRowBase({
   scoreKeepers,
   updateScoreKeepers,
   shuffleDiceValues,
-}: UpperSectionRowBaseProps) {
+}: UpperSectionRowBase) {
   const key = label.toLowerCase();
   if (!isKey(scoreKeepers.upper, key)) {
-    // return error boundary
-    return <Text>Error found</Text>;
+    return <Text>Key mismatch: {key}</Text>;
   }
   const {
     col1HeaderStyle,
