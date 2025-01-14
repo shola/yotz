@@ -1,14 +1,16 @@
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Button, Icon } from "react-native-paper";
-import type { DieValue } from "@/components/diceContext";
+import type { DiceContextType, DieValue } from "@/components/diceContext";
 import { DiceContext } from "@/components/diceContext";
-import { useImmer } from "use-immer";
+import { Updater, useImmer } from "use-immer";
 import {
   initScoreKeepers,
   groupByVal,
   setAllTempScores,
+  isKey,
 } from "@/components/scores";
+import type { ScoreKeepers } from "@/components/scores";
 
 function createStyles() {
   const col1HeaderStyle = { ...styles.col1Header, ...styles.centerAlignView };
@@ -38,6 +40,67 @@ function createStyles() {
   };
 }
 
+interface UpperSectionRowBaseProps {
+  label: string;
+  num: number;
+  scoreKeepers: ScoreKeepers;
+  updateScoreKeepers: Updater<ScoreKeepers>;
+  shuffleDiceValues: DiceContextType["shuffleDiceValues"];
+}
+function UpperSectionRowBase({
+  label,
+  num,
+  scoreKeepers,
+  updateScoreKeepers,
+  shuffleDiceValues,
+}: UpperSectionRowBaseProps) {
+  const key = label.toLowerCase();
+  if (!isKey(scoreKeepers.upper, key)) {
+    // return error boundary
+    return <Text>Error found</Text>;
+  }
+  const {
+    col1HeaderStyle,
+    col1StyleNormal,
+    col2StyleNormal,
+    col3StyleNormal,
+    col2TextStyleSm,
+  } = createStyles();
+
+  return (
+    <View id={`upper-section-row-${num}`}>
+      <View style={styles.row}>
+        <View style={col1StyleNormal}>
+          <Text style={styles["text-sm"]}>{label}</Text>
+          <View style={styles.diceIconGroup}>
+            <Icon source={`dice-${num}-outline`} size={30} />
+            <Text style={key === "aces" && { marginLeft: 2 }}>= {num}</Text>
+          </View>
+        </View>
+        <View style={col2StyleNormal}>
+          <Text style={col2TextStyleSm}>Count and add only {label}</Text>
+        </View>
+        <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+          <Text
+            style={{
+              color: scoreKeepers.upper[key].final ? "black" : "red",
+            }}
+            onPress={() => {
+              (() =>
+                updateScoreKeepers((draft) => {
+                  draft.upper[key].final = true;
+                }))();
+              shuffleDiceValues();
+            }}
+          >
+            {scoreKeepers.upper[key].val}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export default function GameCard() {
   const { diceValues, shuffleDiceValues } = useContext(DiceContext);
   const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
@@ -50,6 +113,16 @@ export default function GameCard() {
     col2TextStyleSm,
     col2TextStyleXs,
   } = createStyles();
+
+  const UpperSectionRow = ({ label, num }: { label: string; num: number }) => (
+    <UpperSectionRowBase
+      label={label}
+      num={num}
+      scoreKeepers={scoreKeepers}
+      updateScoreKeepers={updateScoreKeepers}
+      shuffleDiceValues={shuffleDiceValues}
+    />
+  );
 
   useEffect(() => {
     // Whenever diceValues changes, all temp scores need to be updated
@@ -86,187 +159,12 @@ export default function GameCard() {
             </View>
           </View>
         </View>
-        <View id="upper-section-row-1">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Aces</Text>
-              <View style={styles.diceIconGroup}>
-                <Icon source="dice-1-outline" size={30} />
-                <Text style={{ marginLeft: 2 }}>= 1</Text>
-              </View>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleSm}>Count and add only Aces</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.upper.aces.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  // if (scoreKeepers.upper.twos.final)
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.upper.aces.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.upper.aces.val}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View id="upper-section-row-2">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Twos</Text>
-              <View style={styles.diceIconGroup}>
-                <Icon source="dice-2-outline" size={30} />
-                <Text>= 2</Text>
-              </View>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleSm}>Count and add only Twos</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.upper.twos.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.upper.twos.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.upper.twos.val}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View id="upper-section-row-3">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Threes</Text>
-              <View style={styles.diceIconGroup}>
-                <Icon source="dice-3-outline" size={30} />
-                <Text>= 3</Text>
-              </View>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleSm}>Count and add only Threes</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.upper.threes.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.upper.threes.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.upper.threes.val}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View id="upper-section-row-4">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Fours</Text>
-              <View style={styles.diceIconGroup}>
-                <Icon source="dice-4-outline" size={30} />
-                <Text>= 4</Text>
-              </View>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleSm}>Count and add only Fours</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.upper.fours.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.upper.fours.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.upper.fours.val}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View id="upper-section-row-5">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Fives</Text>
-              <View style={styles.diceIconGroup}>
-                <Icon source="dice-5-outline" size={30} />
-                <Text>= 5</Text>
-              </View>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleSm}>Count and add only Fives</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.upper.fives.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.upper.fives.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.upper.fives.val}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View id="upper-section-row-6">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-sm"]}>Sixes</Text>
-              <View style={styles.diceIconGroup}>
-                <Icon source="dice-6-outline" size={30} />
-                <Text>= 6</Text>
-              </View>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleSm}>Count and add only Sixes</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.upper.sixes.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.upper.sixes.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.upper.sixes.val}
-              </Text>
-            </View>
-          </View>
-        </View>
+        <UpperSectionRow label="Aces" num={1} />
+        <UpperSectionRow label="Twos" num={2} />
+        <UpperSectionRow label="Threes" num={3} />
+        <UpperSectionRow label="Fours" num={4} />
+        <UpperSectionRow label="Fives" num={5} />
+        <UpperSectionRow label="Sixes" num={6} />
         <View id="upper-section-row-7">
           <View style={styles.row}>
             <View style={col1StyleNormal}>
