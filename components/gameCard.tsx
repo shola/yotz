@@ -121,14 +121,14 @@ function BonusCheckMark({
             onPress={() =>
               (() =>
                 updateScoreKeepers((draft) => {
-                  draft.lower.yotz_bonus.bonusInPlay = true;
+                  draft.lower.yotz_bonus.bonusInPlay = false;
                 }))()
             }
-            disabled={yotzBonus.bonusInPlay}
+            disabled={!yotzBonus.bonusInPlay}
           >
             <Icon
               color={
-                yotzBonus.val === matchingNum && !yotzBonus.bonusInPlay
+                yotzBonus.val === matchingNum && yotzBonus.bonusInPlay
                   ? "red"
                   : ""
               }
@@ -539,8 +539,8 @@ export default function GameCard() {
                     <Text
                       style={{
                         color: scoreKeepers.lower.yotz_bonus.bonusInPlay
-                          ? "black"
-                          : "red",
+                          ? "red"
+                          : "black",
                       }}
                     >
                       {scoreKeepers.lower.yotz_bonus.val}

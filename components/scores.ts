@@ -325,19 +325,21 @@ export function updateYotzBonus(
   scoreKeepers: ScoreKeepers,
   updateScoreKeepers: Updater<ScoreKeepers>
 ) {
-  if (!scoreKeepers.lower.yotz.final || scoreKeepers.lower.yotz.val !== 50)
-    return;
+  const previousYotz =
+    scoreKeepers.lower.yotz.final && scoreKeepers.lower.yotz.val === 50;
+
   const isCurrentYotz = !!Object.values(groupByVal(diceValues)).find(
     (group) => group.length === 5
   );
-  if (!isCurrentYotz) return;
-  updateScoreKeepers((draft) => {
-    const newVal = scoreCalculators.lower.yotz_bonus(scoreKeepers.lower);
-    draft.lower.yotz_bonus.val = newVal;
 
-    // Update the yotz_bonus.val as a "temporary" value, signifying the bonus is
-    // "in play" (i.e. "active"), and must be deactivated by clicking on the
-    // current active check mark
-    draft.lower.yotz_bonus.bonusInPlay = false;
+  updateScoreKeepers((draft) => {
+    if (previousYotz && isCurrentYotz) {
+      const newVal = scoreCalculators.lower.yotz_bonus(scoreKeepers.lower);
+      draft.lower.yotz_bonus.val = newVal;
+      draft.lower.yotz_bonus.bonusInPlay = true;
+    } else {
+      // This also "clears" the UI if a user selects something else other than the bonus
+      draft.lower.yotz_bonus.bonusInPlay = false;
+    }
   });
 }
