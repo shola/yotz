@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Button, Icon } from "react-native-paper";
 import type { DiceContextType, DieValue } from "@/components/diceContext";
 import { DiceContext } from "@/components/diceContext";
@@ -9,6 +9,7 @@ import {
   groupByVal,
   setAllTempScores,
   isKey,
+  updateYotzBonus,
 } from "@/components/scores";
 import type { ScoreKeepers } from "@/components/scores";
 
@@ -101,10 +102,64 @@ function UpperSectionRowBase({
   );
 }
 
+interface BonusCheckMark {
+  matchingNum: 100 | 200 | 300 | 400;
+  yotzBonus: ScoreKeepers["lower"]["yotz_bonus"];
+  updateScoreKeepers: Updater<ScoreKeepers>;
+}
+function BonusCheckMark({
+  matchingNum,
+  yotzBonus,
+  updateScoreKeepers,
+}: BonusCheckMark) {
+  // TODO: consider some messaging directing the player what to do in the event of a rare yotz bonus!
+  return (
+    <View style={styles.bonusCell}>
+      {yotzBonus.val >= matchingNum && (
+        <View style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}>
+          <Pressable
+            onPress={() =>
+              (() =>
+                updateScoreKeepers((draft) => {
+                  draft.lower.yotz_bonus.bonusInPlay = true;
+                }))()
+            }
+            disabled={yotzBonus.bonusInPlay}
+          >
+            <Icon
+              color={
+                yotzBonus.val === matchingNum && !yotzBonus.bonusInPlay
+                  ? "red"
+                  : ""
+              }
+              source="check"
+              size={20}
+            />
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+}
+
+function BonusCheckMarks(
+  yotzBonus: ScoreKeepers["lower"]["yotz_bonus"],
+  updateScoreKeepers: Updater<ScoreKeepers>
+) {
+  const matchingNums: BonusCheckMark["matchingNum"][] = [100, 200, 300, 400];
+  return matchingNums.map((matchingNum) => (
+    <BonusCheckMark
+      key={`bonus-check-mark-${matchingNum}`}
+      matchingNum={matchingNum}
+      yotzBonus={yotzBonus}
+      updateScoreKeepers={updateScoreKeepers}
+    />
+  ));
+}
+
 export default function GameCard() {
   const { diceValues, shuffleDiceValues } = useContext(DiceContext);
   const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
-  const [yotzBonus, setYotzBonus] = useState(0);
   const {
     col1HeaderStyle,
     col1StyleNormal,
@@ -124,24 +179,16 @@ export default function GameCard() {
     />
   );
 
+  // TODO: combine these functions together into one? it seems weird to call the same
+  // function from 2 different use effects...
   useEffect(() => {
-    // Whenever diceValues changes, all temp scores need to be updated
-    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers, yotzBonus);
-  }, [diceValues, scoreKeepers]);
-
-  useEffect(() => {
-    if (!scoreKeepers.lower.yotz.final || scoreKeepers.lower.yotz.val !== 50)
-      return;
-
-    const isCurrentYotz = !!Object.values(groupByVal(diceValues)).find(
-      (group) => group.length === 5
-    );
-
-    if (!isCurrentYotz) return;
-
-    const newYotzBonus = yotzBonus + 100;
-    setYotzBonus(newYotzBonus);
+    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
+    updateYotzBonus(diceValues, scoreKeepers, updateScoreKeepers);
   }, [diceValues]);
+
+  useEffect(() => {
+    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
+  }, [scoreKeepers]);
 
   return (
     <View style={styles.card}>
@@ -461,44 +508,10 @@ export default function GameCard() {
                     flexDirection: "row",
                   }}
                 >
-                  {/* TODO: changing the dice will not reverse the auto
-                  counting of the yotz bonus. Fix this bug*/}
-                  <View style={styles.bonusCell}>
-                    {yotzBonus >= 100 && (
-                      <View
-                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
-                      >
-                        <Icon source="check" size={20} />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.bonusCell}>
-                    {yotzBonus >= 200 && (
-                      <View
-                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
-                      >
-                        <Icon source="check" size={20} />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.bonusCell}>
-                    {yotzBonus >= 300 && (
-                      <View
-                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
-                      >
-                        <Icon source="check" size={20} />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.bonusCell}>
-                    {yotzBonus >= 400 && (
-                      <View
-                        style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}
-                      >
-                        <Icon source="check" size={20} />
-                      </View>
-                    )}
-                  </View>
+                  {BonusCheckMarks(
+                    scoreKeepers.lower.yotz_bonus,
+                    updateScoreKeepers
+                  )}
                 </View>
               </View>
               <View style={styles.row}>
@@ -510,7 +523,15 @@ export default function GameCard() {
                 </View>
                 <View style={col3StyleNormal}>
                   <View>
-                    <Text>{yotzBonus}</Text>
+                    <Text
+                      style={{
+                        color: scoreKeepers.lower.yotz_bonus.bonusInPlay
+                          ? "black"
+                          : "red",
+                      }}
+                    >
+                      {scoreKeepers.lower.yotz_bonus.val}
+                    </Text>
                   </View>
                 </View>
               </View>

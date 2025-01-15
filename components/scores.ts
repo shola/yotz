@@ -10,8 +10,9 @@ export function groupByVal<T extends DieValue>(arr: T[]): { [key in T]: T[] } {
 }
 
 export interface CellScore {
-  val?: number;
+  val: number;
   final: boolean;
+  bonusInPlay?: boolean;
 }
 
 interface Scores<T> {
@@ -36,6 +37,7 @@ interface Scores<T> {
     lg_straight: T;
     yotz: T;
     chance: T;
+    yotz_bonus: T;
   };
   lowerAggregate: {
     prelim_total: T;
@@ -48,31 +50,32 @@ export type ScoreKeepers = Scores<CellScore>;
 
 export const initScoreKeepers = (): ScoreKeepers => ({
   upper: {
-    aces: { val: undefined, final: false },
-    twos: { val: undefined, final: false },
-    threes: { val: undefined, final: false },
-    fours: { val: undefined, final: false },
-    fives: { val: undefined, final: false },
-    sixes: { val: undefined, final: false },
+    aces: { val: 0, final: false },
+    twos: { val: 0, final: false },
+    threes: { val: 0, final: false },
+    fours: { val: 0, final: false },
+    fives: { val: 0, final: false },
+    sixes: { val: 0, final: false },
   },
   upperAggregate: {
-    prelim_total: { val: undefined, final: false },
-    bonus: { val: undefined, final: false },
-    total: { val: undefined, final: false },
+    prelim_total: { val: 0, final: false },
+    bonus: { val: 0, final: false },
+    total: { val: 0, final: false },
   },
   lower: {
-    trips: { val: undefined, final: false },
-    quads: { val: undefined, final: false },
-    full_house: { val: undefined, final: false },
-    sm_straight: { val: undefined, final: false },
-    lg_straight: { val: undefined, final: false },
-    yotz: { val: undefined, final: false },
-    chance: { val: undefined, final: false },
+    trips: { val: 0, final: false },
+    quads: { val: 0, final: false },
+    full_house: { val: 0, final: false },
+    sm_straight: { val: 0, final: false },
+    lg_straight: { val: 0, final: false },
+    yotz: { val: 0, final: false },
+    chance: { val: 0, final: false },
+    yotz_bonus: { val: 0, final: false, bonusInPlay: false },
   },
   lowerAggregate: {
-    prelim_total: { val: undefined, final: false },
-    upper_total: { val: undefined, final: false },
-    grand_total: { val: undefined, final: false },
+    prelim_total: { val: 0, final: false },
+    upper_total: { val: 0, final: false },
+    grand_total: { val: 0, final: false },
   },
 });
 
@@ -107,18 +110,18 @@ export const scoreCalculators = {
       const filtered = Object.values(upper).filter(
         (score: CellScore) => score.final
       );
-      const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
+      const summed = filtered.reduce((prev, curr) => prev + curr.val, 0);
       return summed;
     },
     bonus: (upperAggregate: ScoreKeepers["upperAggregate"]) => {
       const prelim_total =
-        upperAggregate.prelim_total && (upperAggregate.prelim_total.val ?? 0);
+        upperAggregate.prelim_total && upperAggregate.prelim_total.val;
       return prelim_total >= 63 ? 35 : 0;
     },
     total: (upperAggregate: ScoreKeepers["upperAggregate"]) => {
       const prelim_total =
-        upperAggregate.prelim_total && (upperAggregate.prelim_total.val ?? 0);
-      const bonus = upperAggregate.bonus && (upperAggregate.bonus.val ?? 0);
+        upperAggregate.prelim_total && upperAggregate.prelim_total.val;
+      const bonus = upperAggregate.bonus && upperAggregate.bonus.val;
       return prelim_total + bonus;
     },
   },
@@ -206,28 +209,32 @@ export const scoreCalculators = {
     chance: (vals: DieValue[]) => {
       return vals.reduce((prev, curr) => prev + curr, 0);
     },
+    yotz_bonus: (lower: ScoreKeepers["lower"]) => {
+      return lower.yotz_bonus.val + 100;
+    },
   },
   lowerAggregate: {
-    prelim_total: (lower: ScoreKeepers["lower"], yotzBonus: number) => {
+    prelim_total: (lower: ScoreKeepers["lower"]) => {
+      // yotz_bonus uses 'final' in a different way, handle it separately
+      // TODO: consider making a new optional param for yotz bonus to use, instead of 'final'
+      const yotzBonus = lower.yotz_bonus.val;
       const filtered = Object.values(lower).filter(
         (score: CellScore) => score.final
       );
-      const summed = filtered.reduce((prev, curr) => prev + (curr.val ?? 0), 0);
+      const summed = filtered.reduce((prev, curr) => prev + curr.val, 0);
       return summed + yotzBonus;
     },
     upper_total: (upperAggregate: ScoreKeepers["upperAggregate"]) =>
       upperAggregate.total.val,
     grand_total: (lowerAggregate: ScoreKeepers["lowerAggregate"]) =>
-      (lowerAggregate.prelim_total.val ?? 0) +
-      (lowerAggregate.upper_total.val ?? 0),
+      lowerAggregate.prelim_total.val + lowerAggregate.upper_total.val,
   },
 };
 
 export function setAllTempScores(
   diceValues: DieValue[],
   scoreKeepers: ScoreKeepers,
-  updateScoreKeepers: Updater<ScoreKeepers>,
-  yotzBonus: number
+  updateScoreKeepers: Updater<ScoreKeepers>
 ) {
   for (const k in scoreKeepers.upper) {
     // Must verify that the key indexes an object before accessing
@@ -247,6 +254,9 @@ export function setAllTempScores(
 
     // if finalized, skip
     if (scoreKeepers.lower[k].final) continue;
+
+    // yotz bonus must be handled as a special case
+    if (k === "yotz_bonus") continue;
 
     // first, you need to verify that the key also indexes the helper
     // set temp value
@@ -277,14 +287,17 @@ export function setAllTempScores(
     }
   }
 
+  const isCurrentYotz = !!Object.values(groupByVal(diceValues)).find(
+    (group) => group.length === 5
+  );
+
   for (const k in scoreKeepers.lowerAggregate) {
     if (!isKey(scoreKeepers.lowerAggregate, k)) continue;
 
     if (k === "prelim_total") {
       updateScoreKeepers((draft) => {
         draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
-          scoreKeepers.lower,
-          yotzBonus
+          scoreKeepers.lower
         );
       });
     }
@@ -305,4 +318,26 @@ export function setAllTempScores(
       });
     }
   }
+}
+
+export function updateYotzBonus(
+  diceValues: DieValue[],
+  scoreKeepers: ScoreKeepers,
+  updateScoreKeepers: Updater<ScoreKeepers>
+) {
+  if (!scoreKeepers.lower.yotz.final || scoreKeepers.lower.yotz.val !== 50)
+    return;
+  const isCurrentYotz = !!Object.values(groupByVal(diceValues)).find(
+    (group) => group.length === 5
+  );
+  if (!isCurrentYotz) return;
+  updateScoreKeepers((draft) => {
+    const newVal = scoreCalculators.lower.yotz_bonus(scoreKeepers.lower);
+    draft.lower.yotz_bonus.val = newVal;
+
+    // Update the yotz_bonus.val as a "temporary" value, signifying the bonus is
+    // "in play" (i.e. "active"), and must be deactivated by clicking on the
+    // current active check mark
+    draft.lower.yotz_bonus.bonusInPlay = false;
+  });
 }
