@@ -40,22 +40,20 @@ function createStyles() {
     col2TextStyleXs,
   };
 }
-
-function upperSectionRowParent() {}
-interface UpperSectionRowBase {
+interface UpperSectionRow {
   label: string;
   num: number;
   scoreKeepers: ScoreKeepers;
   updateScoreKeepers: Updater<ScoreKeepers>;
   shuffleDiceValues: DiceContextType["shuffleDiceValues"];
 }
-function UpperSectionRowBase({
+function UpperSectionRow({
   label,
   num,
   scoreKeepers,
   updateScoreKeepers,
   shuffleDiceValues,
-}: UpperSectionRowBase) {
+}: UpperSectionRow) {
   const key = label.toLowerCase();
   if (!isKey(scoreKeepers.upper, key)) {
     return <Text>Key mismatch: {key}</Text>;
@@ -97,6 +95,50 @@ function UpperSectionRowBase({
             {scoreKeepers.upper[key].val}
           </Text>
         </View>
+      </View>
+    </View>
+  );
+}
+
+interface LowerSectionRow {
+  firstCol: ReactNode;
+  secondColLabel: string;
+  score: ScoreKeepers["lower"];
+  scoreKey: keyof ScoreKeepers["lower"];
+  updateScoreKeepers: Updater<ScoreKeepers>;
+  shuffleDiceValues: DiceContextType["shuffleDiceValues"];
+}
+function LowerSectionRow({
+  firstCol,
+  secondColLabel,
+  score,
+  scoreKey,
+  updateScoreKeepers,
+  shuffleDiceValues,
+}: LowerSectionRow) {
+  const { col2StyleNormal, col2TextStyleXs, col3StyleNormal } = createStyles();
+
+  return (
+    <View style={styles.row}>
+      {firstCol}
+      <View style={col2StyleNormal}>
+        <Text style={col2TextStyleXs}>{secondColLabel}</Text>
+      </View>
+      <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+        <Text
+          style={{
+            color: score[scoreKey].final ? "black" : "red",
+          }}
+          onPress={() => {
+            (() =>
+              updateScoreKeepers((draft) => {
+                draft.lower[scoreKey].final = true;
+              }))();
+            shuffleDiceValues();
+          }}
+        >
+          {score[scoreKey].val}
+        </Text>
       </View>
     </View>
   );
@@ -193,16 +235,6 @@ export default function GameCard() {
     col2TextStyleXs,
   } = createStyles();
 
-  const UpperSectionRow = ({ label, num }: { label: string; num: number }) => (
-    <UpperSectionRowBase
-      label={label}
-      num={num}
-      scoreKeepers={scoreKeepers}
-      updateScoreKeepers={updateScoreKeepers}
-      shuffleDiceValues={shuffleDiceValues}
-    />
-  );
-
   // TODO: combine these functions together into one? it seems weird to call the same
   // function from 2 different use effects...
   useEffect(() => {
@@ -230,12 +262,48 @@ export default function GameCard() {
             </View>
           </View>
         </View>
-        <UpperSectionRow label="Aces" num={1} />
-        <UpperSectionRow label="Twos" num={2} />
-        <UpperSectionRow label="Threes" num={3} />
-        <UpperSectionRow label="Fours" num={4} />
-        <UpperSectionRow label="Fives" num={5} />
-        <UpperSectionRow label="Sixes" num={6} />
+        <UpperSectionRow
+          label="Aces"
+          num={1}
+          scoreKeepers={scoreKeepers}
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
+        <UpperSectionRow
+          label="Twos"
+          num={2}
+          scoreKeepers={scoreKeepers}
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
+        <UpperSectionRow
+          label="Threes"
+          num={3}
+          scoreKeepers={scoreKeepers}
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
+        <UpperSectionRow
+          label="Fours"
+          num={4}
+          scoreKeepers={scoreKeepers}
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
+        <UpperSectionRow
+          label="Fives"
+          num={5}
+          scoreKeepers={scoreKeepers}
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
+        <UpperSectionRow
+          label="Sixes"
+          num={6}
+          scoreKeepers={scoreKeepers}
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
         <View id="upper-section-row-7">
           <RowWithCenterArrowIcon
             firstColumn={
@@ -286,210 +354,134 @@ export default function GameCard() {
           </View>
         </View>
         <View id="lower-section-row-1">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={{ ...styles["text-sm"], width: 30 }}>
-                3 of a kind
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.trips.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.trips.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.trips.val}
-              </Text>
-            </View>
-          </View>
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={{ ...styles["text-sm"], width: 30 }}>
+                  3 of a kind
+                </Text>
+              </View>
+            }
+            secondColLabel="Add Total of All Dice"
+            score={scoreKeepers.lower}
+            scoreKey="trips"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
         </View>
         <View id="lower-section-row-2">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={{ ...styles["text-sm"], width: 30 }}>
-                4 of a kind
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Add Total of All Dice</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.quads.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.quads.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.quads.val}
-              </Text>
-            </View>
-          </View>
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={{ ...styles["text-sm"], width: 30 }}>
+                  4 of a kind
+                </Text>
+              </View>
+            }
+            secondColLabel="Add Total of All Dice"
+            score={scoreKeepers.lower}
+            scoreKey="quads"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
         </View>
         <View id="lower-section-row-3">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={{ ...styles["text-sm"], width: 40 }}>
-                Full House
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Score 25</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.full_house.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.full_house.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.full_house.val}
-              </Text>
-            </View>
-          </View>
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={{ ...styles["text-sm"], width: 40 }}>
+                  Full House
+                </Text>
+              </View>
+            }
+            secondColLabel="Score 25"
+            score={scoreKeepers.lower}
+            scoreKey="full_house"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
         </View>
         <View id="lower-section-row-4">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={{ ...styles["text-sm"], width: 40 }}>
-                Sm Straight
-              </Text>
-              <Text
-                style={{ ...styles["text-xs"], width: 50, textAlign: "right" }}
-              >
-                (Sequence) of 4
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Score 30</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.sm_straight.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.sm_straight.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.sm_straight.val}
-              </Text>
-            </View>
-          </View>
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={{ ...styles["text-sm"], width: 40 }}>
+                  Sm Straight
+                </Text>
+                <Text
+                  style={{
+                    ...styles["text-xs"],
+                    width: 50,
+                    textAlign: "right",
+                  }}
+                >
+                  (Sequence) of 4
+                </Text>
+              </View>
+            }
+            secondColLabel="Score 30"
+            score={scoreKeepers.lower}
+            scoreKey="sm_straight"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
         </View>
         <View id="lower-section-row-5">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={{ ...styles["text-sm"], width: 40 }}>
-                Lg Straight
-              </Text>
-              <Text
-                style={{ ...styles["text-xs"], width: 50, textAlign: "right" }}
-              >
-                (Sequence) of 5
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Score 40</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.lg_straight.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.lg_straight.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.lg_straight.val}
-              </Text>
-            </View>
-          </View>
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={{ ...styles["text-sm"], width: 40 }}>
+                  Lg Straight
+                </Text>
+                <Text
+                  style={{
+                    ...styles["text-xs"],
+                    width: 50,
+                    textAlign: "right",
+                  }}
+                >
+                  (Sequence) of 5
+                </Text>
+              </View>
+            }
+            secondColLabel="Score 40"
+            score={scoreKeepers.lower}
+            scoreKey="lg_straight"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
         </View>
         <View id="lower-section-row-6">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-md"]}>YOT-Z{"     "}</Text>
-              <Text style={{ ...styles["text-xs"], width: 40 }}>
-                5 of a kind
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Score 50</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.yotz.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.yotz.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.yotz.val}
-              </Text>
-            </View>
-          </View>
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>YOT-Z{"     "}</Text>
+                <Text style={{ ...styles["text-xs"], width: 40 }}>
+                  5 of a kind
+                </Text>
+              </View>
+            }
+            secondColLabel="Score 50"
+            score={scoreKeepers.lower}
+            scoreKey="yotz"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
         </View>
-        <View id="lower-section-row-7">
-          <View style={styles.row}>
+        {/* <View id="lower-section-row-7"> */}
+        <LowerSectionRow
+          firstCol={
             <View style={col1StyleNormal}>
               <Text style={styles["text-md"]}>Chance</Text>
             </View>
-            <View style={col2StyleNormal}>
-              <Text style={col2TextStyleXs}>Score Total Of All 5 Dice</Text>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text
-                style={{
-                  color: scoreKeepers.lower.chance.final ? "black" : "red",
-                }}
-                onPress={() => {
-                  (() =>
-                    updateScoreKeepers((draft) => {
-                      draft.lower.chance.final = true;
-                    }))();
-                  shuffleDiceValues();
-                }}
-              >
-                {scoreKeepers.lower.chance.val}
-              </Text>
-            </View>
-          </View>
-        </View>
+          }
+          secondColLabel="Score Total Of All 5 Dice"
+          score={scoreKeepers.lower}
+          scoreKey="chance"
+          updateScoreKeepers={updateScoreKeepers}
+          shuffleDiceValues={shuffleDiceValues}
+        />
+        {/* </View> */}
         <View id="lower-section-row-8">
           <View style={styles.row}>
             <View style={col1StyleNormal}>
