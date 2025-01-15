@@ -468,20 +468,20 @@ export default function GameCard() {
             shuffleDiceValues={shuffleDiceValues}
           />
         </View>
-        {/* <View id="lower-section-row-7"> */}
-        <LowerSectionRow
-          firstCol={
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-md"]}>Chance</Text>
-            </View>
-          }
-          secondColLabel="Score Total Of All 5 Dice"
-          score={scoreKeepers.lower}
-          scoreKey="chance"
-          updateScoreKeepers={updateScoreKeepers}
-          shuffleDiceValues={shuffleDiceValues}
-        />
-        {/* </View> */}
+        <View id="lower-section-row-7">
+          <LowerSectionRow
+            firstCol={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>Chance</Text>
+              </View>
+            }
+            secondColLabel="Score Total Of All 5 Dice"
+            score={scoreKeepers.lower}
+            scoreKey="chance"
+            updateScoreKeepers={updateScoreKeepers}
+            shuffleDiceValues={shuffleDiceValues}
+          />
+        </View>
         <View id="lower-section-row-8">
           <View style={styles.row}>
             <View style={col1StyleNormal}>
