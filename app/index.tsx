@@ -14,6 +14,11 @@ export default function WelcomeScreen() {
           Start new game
         </Button>
       </Link>
+      <Text style={styles.adaNotice}>
+        Please note: In order to preserve the layout of the original scorecard,
+        the fonts had to be made rather small. Visual assistive technology will
+        be further considered in future app versions.
+      </Text>
     </View>
   );
 }
@@ -29,5 +34,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   message: { padding: 24 },
-  button: {},
+  adaNotice: { padding: 24, fontSize: 12, fontStyle: "italic" },
 });
