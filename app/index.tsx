@@ -10,9 +10,7 @@ export default function WelcomeScreen() {
         classic dice game, Yachtzee®, that will help you keep score.
       </Text>
       <Link href="game" asChild>
-        <Button style={styles.button} mode="contained">
-          Start new game
-        </Button>
+        <Button mode="contained">Start new game</Button>
       </Link>
       <Text style={styles.adaNotice}>
         Please note: In order to preserve the layout of the original scorecard,
