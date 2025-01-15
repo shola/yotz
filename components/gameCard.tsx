@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Button, Icon } from "react-native-paper";
 import type { DiceContextType, DieValue } from "@/components/diceContext";
@@ -157,6 +157,30 @@ function BonusCheckMarks(
   ));
 }
 
+interface RowWithCenterArrowIcon {
+  firstColumn: ReactNode;
+  value: number;
+}
+function RowWithCenterArrowIcon({
+  firstColumn,
+  value,
+}: RowWithCenterArrowIcon) {
+  const { col1StyleNormal, col2StyleNormal, col3StyleNormal } = createStyles();
+  return (
+    <View style={styles.row}>
+      {firstColumn}
+      <View style={col2StyleNormal}>
+        <View style={styles.arrow}>
+          <Icon source="arrow-right-thin" size={30} />
+        </View>
+      </View>
+      <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
+        <Text>{value}</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function GameCard() {
   const { diceValues, shuffleDiceValues } = useContext(DiceContext);
   const [scoreKeepers, updateScoreKeepers] = useImmer(initScoreKeepers);
@@ -213,20 +237,14 @@ export default function GameCard() {
         <UpperSectionRow label="Fives" num={5} />
         <UpperSectionRow label="Sixes" num={6} />
         <View id="upper-section-row-7">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              {/* This score can not be clicked on */}
-              <Text style={styles["text-md"]}>TOTAL SCORE</Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <View style={styles.arrow}>
-                <Icon source="arrow-right-thin" size={30} />
+          <RowWithCenterArrowIcon
+            firstColumn={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>TOTAL SCORE</Text>
               </View>
-            </View>
-            <View style={{ ...col3StyleNormal, justifyContent: "center" }}>
-              <Text>{scoreKeepers.upperAggregate.prelim_total.val}</Text>
-            </View>
-          </View>
+            }
+            value={scoreKeepers.upperAggregate.prelim_total.val}
+          />
         </View>
         <View id="upper-section-row-8">
           <View style={styles.row}>
@@ -246,22 +264,17 @@ export default function GameCard() {
           </View>
         </View>
         <View id="upper-section-row-9">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-md"]}>Total{"    "}</Text>
-              <Text style={{ ...styles["text-xs"], width: 55 }}>
-                Of Upper Section
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <View style={styles.arrow}>
-                <Icon source="arrow-right-thin" size={30} />
+          <RowWithCenterArrowIcon
+            firstColumn={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>Total{"    "}</Text>
+                <Text style={{ ...styles["text-xs"], width: 55 }}>
+                  Of Upper Section
+                </Text>
               </View>
-            </View>
-            <View style={col3StyleNormal}>
-              <Text>{scoreKeepers.upperAggregate.total.val}</Text>
-            </View>
-          </View>
+            }
+            value={scoreKeepers.upperAggregate.total.val}
+          />
         </View>
       </View>
       <View id="lower-section">
@@ -539,55 +552,40 @@ export default function GameCard() {
           </View>
         </View>
         <View id="lower-section-row-9">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
-              <Text style={{ ...styles["text-xs"], width: 40 }}>
-                Of Lower Section
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <View style={styles.arrow}>
-                <Icon source="arrow-right-thin" size={30} />
+          <RowWithCenterArrowIcon
+            firstColumn={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
+                <Text style={{ ...styles["text-xs"], width: 40 }}>
+                  Of Lower Section
+                </Text>
               </View>
-            </View>
-            <View style={col3StyleNormal}>
-              <Text>{scoreKeepers.lowerAggregate.prelim_total.val}</Text>
-            </View>
-          </View>
+            }
+            value={scoreKeepers.lowerAggregate.prelim_total.val}
+          />
         </View>
         <View id="lower-section-row-10">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
-              <Text style={{ ...styles["text-xs"], width: 40 }}>
-                Of Upper Section
-              </Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <View style={styles.arrow}>
-                <Icon source="arrow-right-thin" size={30} />
+          <RowWithCenterArrowIcon
+            firstColumn={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>TOTAL{"    "}</Text>
+                <Text style={{ ...styles["text-xs"], width: 40 }}>
+                  Of Upper Section
+                </Text>
               </View>
-            </View>
-            <View style={col3StyleNormal}>
-              <Text>{scoreKeepers.lowerAggregate.upper_total.val}</Text>
-            </View>
-          </View>
+            }
+            value={scoreKeepers.lowerAggregate.upper_total.val}
+          />
         </View>
         <View id="lower-section-row-11">
-          <View style={styles.row}>
-            <View style={col1StyleNormal}>
-              <Text style={styles["text-md"]}>GRAND TOTAL</Text>
-            </View>
-            <View style={col2StyleNormal}>
-              <View style={styles.arrow}>
-                <Icon source="arrow-right-thin" size={30} />
+          <RowWithCenterArrowIcon
+            firstColumn={
+              <View style={col1StyleNormal}>
+                <Text style={styles["text-md"]}>GRAND TOTAL</Text>
               </View>
-            </View>
-            <View style={col3StyleNormal}>
-              <Text>{scoreKeepers.lowerAggregate.grand_total.val}</Text>
-            </View>
-          </View>
+            }
+            value={scoreKeepers.lowerAggregate.grand_total.val}
+          />
         </View>
       </View>
     </View>
