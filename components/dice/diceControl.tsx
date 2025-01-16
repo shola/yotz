@@ -1,8 +1,8 @@
 import { PropsWithChildren, useContext, useRef, useState } from "react";
 import { Icon, Button, Menu } from "react-native-paper";
 import { View, StyleSheet } from "react-native";
-import type { DiceContextType, DieValue } from "@/app/game";
-import { DiceContext } from "@/app/game";
+import { DiceContext, shuffleDiceValues } from "@/components/dice/diceContext";
+import type { DieValue, DiceContextType } from "@/components/dice/diceContext";
 
 interface DieControlProps {
   dieValue: DieValue;
