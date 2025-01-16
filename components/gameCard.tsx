@@ -1,4 +1,5 @@
-import React, { ReactNode, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Icon } from "react-native-paper";
 import type { DiceContextType } from "@/components/diceContext";
@@ -13,187 +14,10 @@ import {
 import type { ScoreKeepers } from "@/components/scores";
 import styles from "@/components/gameCardStyles";
 
-interface UpperSectionRow {
-  styles: GameCardStyles;
-  label: string;
-  num: number;
-  scoreKeepers: ScoreKeepers;
-  updateScoreKeepers: Updater<ScoreKeepers>;
-  shuffleDiceValues: DiceContextType["shuffleDiceValues"];
-}
-function UpperSectionRow({
-  styles,
-  label,
-  num,
-  scoreKeepers,
-  updateScoreKeepers,
-  shuffleDiceValues,
-}: UpperSectionRow) {
-  const key = label.toLowerCase();
-  if (!isKey(scoreKeepers.upper, key)) {
-    return <Text>Key mismatch: {key}</Text>;
-  }
-
-  return (
-    <View id={`upper-section-row-${num}`}>
-      <View style={styles.row}>
-        <View style={styles.col1StyleNormal}>
-          <Text style={styles["text-sm"]}>{label}</Text>
-          <View style={styles.diceIconGroup}>
-            <Icon source={`dice-${num}-outline`} size={30} />
-            <Text style={key === "aces" && { marginLeft: 2 }}>= {num}</Text>
-          </View>
-        </View>
-        <View style={styles.col2StyleNormal}>
-          <Text style={styles.col2TextStyleSm}>Count and add only {label}</Text>
-        </View>
-        <View style={styles.col3StyleNormal}>
-          <Text
-            style={{
-              color: scoreKeepers.upper[key].final ? "black" : "red",
-            }}
-            onPress={() => {
-              (() =>
-                updateScoreKeepers((draft) => {
-                  draft.upper[key].final = true;
-                }))();
-              shuffleDiceValues();
-            }}
-          >
-            {scoreKeepers.upper[key].val}
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-interface LowerSectionRow {
-  styles: GameCardStyles;
-  firstCol: ReactNode;
-  secondColLabel: string;
-  score: ScoreKeepers["lower"];
-  scoreKey: keyof ScoreKeepers["lower"];
-  updateScoreKeepers: Updater<ScoreKeepers>;
-  shuffleDiceValues: DiceContextType["shuffleDiceValues"];
-}
-function LowerSectionRow({
-  styles,
-  firstCol,
-  secondColLabel,
-  score,
-  scoreKey,
-  updateScoreKeepers,
-  shuffleDiceValues,
-}: LowerSectionRow) {
-  return (
-    <View style={styles.row}>
-      {firstCol}
-      <View style={styles.col2StyleNormal}>
-        <Text style={styles.col2TextStyleXs}>{secondColLabel}</Text>
-      </View>
-      <View style={styles.col3StyleNormal}>
-        <Text
-          style={{
-            color: score[scoreKey].final ? "black" : "red",
-          }}
-          onPress={() => {
-            (() =>
-              updateScoreKeepers((draft) => {
-                draft.lower[scoreKey].final = true;
-              }))();
-            shuffleDiceValues();
-          }}
-        >
-          {score[scoreKey].val}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-interface BonusCheckMark {
-  matchingNum: 100 | 200 | 300 | 400;
-  yotzBonus: ScoreKeepers["lower"]["yotz_bonus"];
-  updateScoreKeepers: Updater<ScoreKeepers>;
-}
-function BonusCheckMark({
-  matchingNum,
-  yotzBonus,
-  updateScoreKeepers,
-}: BonusCheckMark) {
-  // TODO: consider some messaging directing the player what to do in the event of a rare yotz bonus!
-  return (
-    <View style={styles.bonusCell}>
-      {yotzBonus.val >= matchingNum && (
-        <View style={{ transform: [{ scaleX: 0.7 }, { scaleY: 2 }] }}>
-          <Pressable
-            onPress={() =>
-              (() =>
-                updateScoreKeepers((draft) => {
-                  draft.lower.yotz_bonus.bonusInPlay = false;
-                }))()
-            }
-            disabled={!yotzBonus.bonusInPlay}
-          >
-            <Icon
-              color={
-                yotzBonus.val === matchingNum && yotzBonus.bonusInPlay
-                  ? "red"
-                  : ""
-              }
-              source="check"
-              size={20}
-            />
-          </Pressable>
-        </View>
-      )}
-    </View>
-  );
-}
-
-function BonusCheckMarks(
-  yotzBonus: ScoreKeepers["lower"]["yotz_bonus"],
-  updateScoreKeepers: Updater<ScoreKeepers>
-) {
-  const matchingNums: BonusCheckMark["matchingNum"][] = [100, 200, 300, 400];
-  return matchingNums.map((matchingNum) => (
-    <BonusCheckMark
-      key={`bonus-check-mark-${matchingNum}`}
-      matchingNum={matchingNum}
-      yotzBonus={yotzBonus}
-      updateScoreKeepers={updateScoreKeepers}
-    />
-  ));
-}
-
-type GameCardStyles = typeof styles;
-interface RowWithCenterArrowIcon {
-  firstColumn: ReactNode;
-  value: number;
-  styles: GameCardStyles;
-}
-// QUESTION: should these components take a style object?
-// QUESTION: what's the best way to share related styles in React Native?
-function RowWithCenterArrowIcon({
-  firstColumn,
-  value,
-  styles,
-}: RowWithCenterArrowIcon) {
-  return (
-    <View style={styles.row}>
-      {firstColumn}
-      <View style={styles.col2StyleNormal}>
-        <View style={styles.arrow}>
-          <Icon source="arrow-right-thin" size={30} />
-        </View>
-      </View>
-      <View style={styles.col3StyleNormal}>
-        <Text>{value}</Text>
-      </View>
-    </View>
-  );
-}
+import { LowerSectionRow } from "@/components/lowerSectionRow";
+import { UpperSectionRow } from "@/components/upperSectionRow";
+import { BonusCheckMarks } from "@/components/bonusCheckMarks";
+import { RowWithCenterArrowIcon } from "@/components/rowWithCenterArrowIcon";
 
 export default function GameCard() {
   const { diceValues, shuffleDiceValues } = useContext(DiceContext);
@@ -491,6 +315,7 @@ export default function GameCard() {
                   }}
                 >
                   {BonusCheckMarks(
+                    styles,
                     scoreKeepers.lower.yotz_bonus,
                     updateScoreKeepers
                   )}
