@@ -1,4 +1,4 @@
-import type { DieValue } from "@/components/diceContext";
+import type { DieValue } from "@/components/dice/diceContext";
 import { Updater } from "use-immer";
 
 export function groupByVal<T extends DieValue>(arr: T[]): { [key in T]: T[] } {

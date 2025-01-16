@@ -1,11 +1,11 @@
-import type { GameCardStyles } from "@/components/gameCardStyles";
+import type { GameCardStyles } from "@/components/gameCard/gameCardStyles";
 import React from "react";
 import { View, Text } from "react-native";
 import { Icon } from "react-native-paper";
-import type { DiceContextType } from "@/components/diceContext";
+import type { DiceContextType } from "@/components/dice/diceContext";
 import { Updater, useImmer } from "use-immer";
-import { isKey } from "@/components/scores";
-import type { ScoreKeepers } from "@/components/scores";
+import { isKey } from "@/components/gameCardState/scores";
+import type { ScoreKeepers } from "@/components/gameCardState/scores";
 
 interface UpperSectionRow {
   styles: GameCardStyles;

@@ -2,22 +2,22 @@ import React, { useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { Icon } from "react-native-paper";
-import type { DiceContextType } from "@/components/diceContext";
-import { DiceContext } from "@/components/diceContext";
+import type { DiceContextType } from "@/components/dice/diceContext";
+import { DiceContext } from "@/components/dice/diceContext";
 import { Updater, useImmer } from "use-immer";
 import {
   initScoreKeepers,
   isKey,
   setIndependentTempScores,
   setAggregateTempScores,
-} from "@/components/scores";
-import type { ScoreKeepers } from "@/components/scores";
-import styles from "@/components/gameCardStyles";
+} from "@/components/gameCardState/scores";
+import type { ScoreKeepers } from "@/components/gameCardState/scores";
+import styles from "@/components/gameCard/gameCardStyles";
 
-import { LowerSectionRow } from "@/components/lowerSectionRow";
-import { UpperSectionRow } from "@/components/upperSectionRow";
-import { BonusCheckMarks } from "@/components/bonusCheckMarks";
-import { RowWithCenterArrowIcon } from "@/components/rowWithCenterArrowIcon";
+import { LowerSectionRow } from "@/components/gameCard/lowerSectionRow";
+import { UpperSectionRow } from "@/components/gameCard/upperSectionRow";
+import { BonusCheckMarks } from "@/components/gameCard/bonusCheckMarks";
+import { RowWithCenterArrowIcon } from "@/components/gameCard/rowWithCenterArrowIcon";
 
 export default function GameCard() {
   const { diceValues, shuffleDiceValues } = useContext(DiceContext);

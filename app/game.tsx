@@ -1,9 +1,9 @@
 import { Text, StyleSheet, View } from "react-native";
 import { useState, createContext, SetStateAction, Dispatch } from "react";
-import GameCard from "@/components/gameCard";
-import DiceControl from "@/components/diceControl";
-import { DiceContext, shuffleDiceValues } from "@/components/diceContext";
-import type { DieValue } from "@/components/diceContext";
+import GameCard from "@/components/gameCard/gameCard";
+import DiceControl from "@/components/dice/diceControl";
+import { DiceContext, shuffleDiceValues } from "@/components/dice/diceContext";
+import type { DieValue } from "@/components/dice/diceContext";
 
 export default function Game() {
   const [diceValues, setDiceValues] = useState<DieValue[]>(shuffleDiceValues);
