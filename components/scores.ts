@@ -86,39 +86,42 @@ export function isKey<T extends object>(
   return key in obj;
 }
 
-export type ScoreCalculatorsT = Scores<
-  | ((vals: DieValue[]) => number)
-  | ((upper: ScoreKeepers["upper"]) => number)
-  | ((upperAggregate: ScoreKeepers["upperAggregate"]) => number)
-  | (() => undefined)
+export type ScoreCalculators = Scores<
+  (vals: DieValue[], scores: ScoreKeepers) => number
 >;
-// TODO: put guards in place so scoreKeepers only get updated once, from null
-// TODO: I may need to separate the cells by those that are independent, and dependent.
-// prelim_total being the first dependent cell
-export const scoreCalculators = {
+export const scoreCalculators: ScoreCalculators = {
   upper: {
     /* these are based on the current roll */
-    aces: (vals: DieValue[]) => vals.filter((v) => v === 1).length * 1,
-    twos: (vals: DieValue[]) => vals.filter((v) => v === 2).length * 2,
-    threes: (vals: DieValue[]) => vals.filter((v) => v === 3).length * 3,
-    fours: (vals: DieValue[]) => vals.filter((v) => v === 4).length * 4,
-    fives: (vals: DieValue[]) => vals.filter((v) => v === 5).length * 5,
-    sixes: (vals: DieValue[]) => vals.filter((v) => v === 6).length * 6,
+    aces: (vals: DieValue[], scores: ScoreKeepers) =>
+      vals.filter((v) => v === 1).length * 1,
+    twos: (vals: DieValue[], scores: ScoreKeepers) =>
+      vals.filter((v) => v === 2).length * 2,
+    threes: (vals: DieValue[], scores: ScoreKeepers) =>
+      vals.filter((v) => v === 3).length * 3,
+    fours: (vals: DieValue[], scores: ScoreKeepers) =>
+      vals.filter((v) => v === 4).length * 4,
+    fives: (vals: DieValue[], scores: ScoreKeepers) =>
+      vals.filter((v) => v === 5).length * 5,
+    sixes: (vals: DieValue[], scores: ScoreKeepers) =>
+      vals.filter((v) => v === 6).length * 6,
   },
   upperAggregate: {
-    prelim_total: (upper: ScoreKeepers["upper"]) => {
+    prelim_total: (vals: DieValue[], scores: ScoreKeepers) => {
+      const { upper } = scores;
       const filtered = Object.values(upper).filter(
         (score: CellScore) => score.final
       );
       const summed = filtered.reduce((prev, curr) => prev + curr.val, 0);
       return summed;
     },
-    bonus: (upperAggregate: ScoreKeepers["upperAggregate"]) => {
+    bonus: (vals: DieValue[], scores: ScoreKeepers) => {
+      const { upperAggregate } = scores;
       const prelim_total =
         upperAggregate.prelim_total && upperAggregate.prelim_total.val;
       return prelim_total >= 63 ? 35 : 0;
     },
-    total: (upperAggregate: ScoreKeepers["upperAggregate"]) => {
+    total: (vals: DieValue[], scores: ScoreKeepers) => {
+      const { upperAggregate } = scores;
       const prelim_total =
         upperAggregate.prelim_total && upperAggregate.prelim_total.val;
       const bonus = upperAggregate.bonus && upperAggregate.bonus.val;
@@ -131,7 +134,7 @@ export const scoreCalculators = {
     Start with the biggest and work way down to smallest.
     FindBiggestTrips
     */
-    trips: (vals: DieValue[]) => {
+    trips: (vals: DieValue[], scores: ScoreKeepers) => {
       const diceCounts = groupByVal(vals);
 
       const hasTrips = Object.values(diceCounts).find(
@@ -140,7 +143,7 @@ export const scoreCalculators = {
 
       return hasTrips ? vals.reduce((prev, curr) => prev + curr, 0) : 0;
     },
-    quads: (vals: DieValue[]) => {
+    quads: (vals: DieValue[], scores: ScoreKeepers) => {
       const diceCounts = groupByVal(vals);
 
       const hasQuads = Object.values(diceCounts).find(
@@ -149,7 +152,7 @@ export const scoreCalculators = {
 
       return hasQuads ? vals.reduce((prev, curr) => prev + curr, 0) : 0;
     },
-    full_house: (vals: DieValue[]) => {
+    full_house: (vals: DieValue[], scores: ScoreKeepers) => {
       const diceCounts = groupByVal(vals);
 
       const hasTrips = Object.values(diceCounts).find(
@@ -161,7 +164,7 @@ export const scoreCalculators = {
 
       return hasTrips && hasPair ? 25 : 0;
     },
-    sm_straight: (vals: DieValue[]) => {
+    sm_straight: (vals: DieValue[], scores: ScoreKeepers) => {
       const sortedVals = [...vals].sort();
       let consecutiveCount = 1;
 
@@ -180,7 +183,7 @@ export const scoreCalculators = {
 
       return 0;
     },
-    lg_straight: (vals: DieValue[]) => {
+    lg_straight: (vals: DieValue[], scores: ScoreKeepers) => {
       const sortedVals = [...vals].sort();
       let consecutiveCount = 1;
 
@@ -198,7 +201,7 @@ export const scoreCalculators = {
       }
       return 0;
     },
-    yotz: (vals: DieValue[]) => {
+    yotz: (vals: DieValue[], scores: ScoreKeepers) => {
       const diceCounts = groupByVal(vals);
       const hasYotZ = Object.values(diceCounts).find(
         (list) => list.length === 5
@@ -206,17 +209,19 @@ export const scoreCalculators = {
 
       return hasYotZ ? 50 : 0;
     },
-    chance: (vals: DieValue[]) => {
+    chance: (vals: DieValue[], scores: ScoreKeepers) => {
       return vals.reduce((prev, curr) => prev + curr, 0);
     },
-    yotz_bonus: (lower: ScoreKeepers["lower"]) => {
+    yotz_bonus: (vals: DieValue[], scores: ScoreKeepers) => {
+      const { lower } = scores;
       return lower.yotz_bonus.val + 100;
     },
   },
   lowerAggregate: {
-    prelim_total: (lower: ScoreKeepers["lower"]) => {
+    prelim_total: (vals: DieValue[], scores: ScoreKeepers) => {
       // yotz_bonus uses 'final' in a different way, handle it separately
       // TODO: consider making a new optional param for yotz bonus to use, instead of 'final'
+      const { lower, lowerAggregate } = scores;
       const yotzBonus = lower.yotz_bonus.val;
       const filtered = Object.values(lower).filter(
         (score: CellScore) => score.final
@@ -224,10 +229,11 @@ export const scoreCalculators = {
       const summed = filtered.reduce((prev, curr) => prev + curr.val, 0);
       return summed + yotzBonus;
     },
-    upper_total: (upperAggregate: ScoreKeepers["upperAggregate"]) =>
-      upperAggregate.total.val,
-    grand_total: (lowerAggregate: ScoreKeepers["lowerAggregate"]) =>
-      lowerAggregate.prelim_total.val + lowerAggregate.upper_total.val,
+    upper_total: (vals: DieValue[], scores: ScoreKeepers) =>
+      scores.upperAggregate.total.val,
+    grand_total: (vals: DieValue[], scores: ScoreKeepers) =>
+      scores.lowerAggregate.prelim_total.val +
+      scores.lowerAggregate.upper_total.val,
   },
 };
 
@@ -245,7 +251,7 @@ export function setAllTempScores(
 
     // set temp value
     updateScoreKeepers((draft) => {
-      draft.upper[k].val = scoreCalculators.upper[k](diceValues);
+      draft.upper[k].val = scoreCalculators.upper[k](diceValues, scoreKeepers);
     });
   }
   for (const k in scoreKeepers.lower) {
@@ -261,7 +267,7 @@ export function setAllTempScores(
     // first, you need to verify that the key also indexes the helper
     // set temp value
     updateScoreKeepers((draft) => {
-      draft.lower[k].val = scoreCalculators.lower[k](diceValues);
+      draft.lower[k].val = scoreCalculators.lower[k](diceValues, scoreKeepers);
     });
   }
 
@@ -273,7 +279,8 @@ export function setAllTempScores(
     if (k === "prelim_total") {
       updateScoreKeepers((draft) => {
         draft.upperAggregate[k].val = scoreCalculators.upperAggregate[k](
-          scoreKeepers.upper
+          diceValues,
+          scoreKeepers
         );
       });
     }
@@ -281,7 +288,8 @@ export function setAllTempScores(
     if (k === "bonus" || k === "total") {
       updateScoreKeepers((draft) => {
         draft.upperAggregate[k].val = scoreCalculators.upperAggregate[k](
-          scoreKeepers.upperAggregate
+          diceValues,
+          scoreKeepers
         );
       });
     }
@@ -297,7 +305,8 @@ export function setAllTempScores(
     if (k === "prelim_total") {
       updateScoreKeepers((draft) => {
         draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
-          scoreKeepers.lower
+          diceValues,
+          scoreKeepers
         );
       });
     }
@@ -305,7 +314,8 @@ export function setAllTempScores(
     if (k === "upper_total") {
       updateScoreKeepers((draft) => {
         draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
-          scoreKeepers.upperAggregate
+          diceValues,
+          scoreKeepers
         );
       });
     }
@@ -313,7 +323,8 @@ export function setAllTempScores(
     if (k === "grand_total") {
       updateScoreKeepers((draft) => {
         draft.lowerAggregate[k].val = scoreCalculators.lowerAggregate[k](
-          scoreKeepers.lowerAggregate
+          diceValues,
+          scoreKeepers
         );
       });
     }
@@ -334,7 +345,10 @@ export function updateYotzBonus(
 
   updateScoreKeepers((draft) => {
     if (previousYotz && isCurrentYotz) {
-      const newVal = scoreCalculators.lower.yotz_bonus(scoreKeepers.lower);
+      const newVal = scoreCalculators.lower.yotz_bonus(
+        diceValues,
+        scoreKeepers
+      );
       draft.lower.yotz_bonus.val = newVal;
       draft.lower.yotz_bonus.bonusInPlay = true;
     } else {
