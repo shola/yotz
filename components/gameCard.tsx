@@ -1,15 +1,14 @@
 import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import { Button, Icon } from "react-native-paper";
-import type { DiceContextType, DieValue } from "@/components/diceContext";
+import { Icon } from "react-native-paper";
+import type { DiceContextType } from "@/components/diceContext";
 import { DiceContext } from "@/components/diceContext";
 import { Updater, useImmer } from "use-immer";
 import {
   initScoreKeepers,
-  groupByVal,
-  setAllTempScores,
   isKey,
-  updateYotzBonus,
+  setIndependentTempScores,
+  setAggregateTempScores,
 } from "@/components/scores";
 import type { ScoreKeepers } from "@/components/scores";
 
@@ -235,15 +234,12 @@ export default function GameCard() {
     col2TextStyleXs,
   } = createStyles();
 
-  // TODO: combine these functions together into one? it seems weird to call the same
-  // function from 2 different use effects...
   useEffect(() => {
-    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
-    updateYotzBonus(diceValues, scoreKeepers, updateScoreKeepers);
+    setIndependentTempScores(diceValues, scoreKeepers, updateScoreKeepers);
   }, [diceValues]);
 
   useEffect(() => {
-    setAllTempScores(diceValues, scoreKeepers, updateScoreKeepers);
+    setAggregateTempScores(diceValues, scoreKeepers, updateScoreKeepers);
   }, [scoreKeepers]);
 
   return (

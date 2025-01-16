@@ -237,7 +237,9 @@ export const scoreCalculators: ScoreCalculators = {
   },
 };
 
-export function setAllTempScores(
+// Independent scores are those that can be calculated
+// directly from dice values ONLY.
+export function setIndependentTempScores(
   diceValues: DieValue[],
   scoreKeepers: ScoreKeepers,
   updateScoreKeepers: Updater<ScoreKeepers>
@@ -261,16 +263,24 @@ export function setAllTempScores(
     // if finalized, skip
     if (scoreKeepers.lower[k].final) continue;
 
-    // yotz bonus must be handled as a special case
-    if (k === "yotz_bonus") continue;
-
-    // first, you need to verify that the key also indexes the helper
-    // set temp value
-    updateScoreKeepers((draft) => {
-      draft.lower[k].val = scoreCalculators.lower[k](diceValues, scoreKeepers);
-    });
+    if (k !== "yotz_bonus") {
+      updateScoreKeepers((draft) => {
+        draft.lower[k].val = scoreCalculators.lower[k](
+          diceValues,
+          scoreKeepers
+        );
+      });
+    } else {
+      updateYotzBonus(diceValues, scoreKeepers, updateScoreKeepers);
+    }
   }
+}
 
+export function setAggregateTempScores(
+  diceValues: DieValue[],
+  scoreKeepers: ScoreKeepers,
+  updateScoreKeepers: Updater<ScoreKeepers>
+) {
   // Since these values are calculated based off of previous rolls, evaluate
   // them next in line
   for (const k in scoreKeepers.upperAggregate) {
