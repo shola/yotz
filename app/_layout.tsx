@@ -1,41 +1,38 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { Stack } from "expo-router";
-import "react-native-reanimated";
+import { Text } from "react-native";
+import { Stack, router } from "expo-router";
 import { PaperProvider } from "react-native-paper";
+import EndGameButton from "@/components/endGameButton";
 
-import { useColorScheme } from "@/components/useColorScheme";
-
-/**
- * Layout routes render shared elements like headers and tab bars to persist
- * between pages. They must be exported as default.
- */
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
-
-// Stack is an alternative to Slot from expo-router
-export default function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <PaperProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        </Stack>
-      </PaperProvider>
-    </ThemeProvider>
+    <PaperProvider>
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{ title: "Welcome to yot-z!", headerBackVisible: false }}
+        />
+        <Stack.Screen
+          name="game"
+          options={{
+            title: "YOT-Z Score Card",
+            headerBackVisible: false,
+            headerRight: () => (
+              <EndGameButton
+                openEndGameModal={() => {
+                  router.push("/endGameModal");
+                }}
+              />
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="endGameModal"
+          options={{
+            title: "End current game?",
+            presentation: "modal",
+          }}
+        />
+      </Stack>
+    </PaperProvider>
   );
 }
