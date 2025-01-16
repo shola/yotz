@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
   centerAlignView: {
     display: "flex",
     alignItems: "center",
-    // justifyContent: "center", // NOTE: uncommenting this line breaks indents for columns 1 and 2
   },
   rightAlign: {
     textAlign: "right",

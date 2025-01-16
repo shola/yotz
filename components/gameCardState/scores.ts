@@ -219,8 +219,6 @@ export const scoreCalculators: ScoreCalculators = {
   },
   lowerAggregate: {
     prelim_total: (vals: DieValue[], scores: ScoreKeepers) => {
-      // yotz_bonus uses 'final' in a different way, handle it separately
-      // TODO: consider making a new optional param for yotz bonus to use, instead of 'final'
       const { lower, lowerAggregate } = scores;
       const yotzBonus = lower.yotz_bonus.val;
       const filtered = Object.values(lower).filter(
@@ -248,10 +246,8 @@ export function setIndependentTempScores(
     // Must verify that the key indexes an object before accessing
     if (!isKey(scoreKeepers.upper, k)) continue;
 
-    // if finalized, skip
     if (scoreKeepers.upper[k].final) continue;
 
-    // set temp value
     updateScoreKeepers((draft) => {
       draft.upper[k].val = scoreCalculators.upper[k](diceValues, scoreKeepers);
     });
@@ -260,7 +256,6 @@ export function setIndependentTempScores(
     // Must verify that the key indexes an object before accessing
     if (!isKey(scoreKeepers.lower, k)) continue;
 
-    // if finalized, skip
     if (scoreKeepers.lower[k].final) continue;
 
     if (k !== "yotz_bonus") {
@@ -281,8 +276,6 @@ export function setAggregateTempScores(
   scoreKeepers: ScoreKeepers,
   updateScoreKeepers: Updater<ScoreKeepers>
 ) {
-  // Since these values are calculated based off of previous rolls, evaluate
-  // them next in line
   for (const k in scoreKeepers.upperAggregate) {
     if (!isKey(scoreKeepers.upperAggregate, k)) continue;
 
